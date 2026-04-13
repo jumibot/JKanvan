@@ -118,7 +118,7 @@ async function mProjectTeam(projId) {
           <option value="">Seleccionar usuario...</option>
           ${nonMembers.map(u=>`<option value="${u.id}">${esc(u.name)} — ${esc(u.email)}</option>`).join('')}
         </select>
-        <button class="btn btn-primary py-2 px-3" onclick="addMember(${projId})"><span class="ms ms-sm">person_add</span></button>
+        <button class="btn btn-primary py-2 px-3" onclick="addMember(${projId}, +document.getElementById('pt-sel').value)"><span class="ms ms-sm">person_add</span></button>
       </div>
     </div>` : ''}
     <div class="flex justify-end mt-5">
