@@ -19,7 +19,7 @@ function mProjectTags(pid) {
           </div>
           ${canManage ? `<div class="flex gap-0.5">
             <button class="btn-icon" onclick="closeM();mTag(${t.id})"><span class="ms ms-sm">edit</span></button>
-            <button class="btn-icon" style="color:#6b7280" onmouseenter="this.style.color='#f87171'" onmouseleave="this.style.color='#6b7280'" onclick="closeM();confirmDel('tag',${t.id},${jsq(t.name)})"><span class="ms ms-sm">delete</span></button>
+            <button class="btn-icon" style="color:#6b7280" onmouseenter="this.style.color='#f87171'" onmouseleave="this.style.color='#6b7280'" onclick="closeM();confirmDel('tag',${t.id})"><span class="ms ms-sm">delete</span></button>
           </div>` : ''}
         </div>`).join('')
     : `<p class="text-slate-500 text-sm text-center py-6">${canManage ? 'Sin etiquetas. Crea la primera.' : 'Este proyecto no tiene etiquetas aún.'}</p>`;

@@ -24,7 +24,7 @@ function vProjectPriorities() {
       </div>
       ${canManage ? `<div class="flex gap-0.5">
         <button class="btn-icon" onclick="mPriority(${pr.id})"><span class="ms ms-sm">edit</span></button>
-        <button class="btn-icon" style="color:#6b7280" onmouseenter="this.style.color='#f87171'" onmouseleave="this.style.color='#6b7280'" onclick="confirmDel('priority',${pr.id},${jsq(pr.name)})"><span class="ms ms-sm">delete</span></button>
+        <button class="btn-icon" style="color:#6b7280" onmouseenter="this.style.color='#f87171'" onmouseleave="this.style.color='#6b7280'" onclick="confirmDel('priority',${pr.id})"><span class="ms ms-sm">delete</span></button>
       </div>` : ''}
     </div>`).join('')}
     ${canManage ? `<button class="glass-card rounded-2xl p-4 flex items-center justify-center gap-2 text-slate-600 hover:text-primary hover:border-primary/25 transition-all text-sm font-medium" style="border:2px dashed rgba(100,116,139,.18)" onclick="mPriority()">
@@ -49,7 +49,7 @@ function vPriorities() {
       </div>
       <div class="flex gap-0.5">
         <button class="btn-icon" onclick="mPriority(${p.id})"><span class="ms ms-sm">edit</span></button>
-        <button class="btn-icon" style="color:#6b7280" onmouseenter="this.style.color='#f87171'" onmouseleave="this.style.color='#6b7280'" onclick="confirmDel('priority',${p.id},${jsq(p.name)})"><span class="ms ms-sm">delete</span></button>
+        <button class="btn-icon" style="color:#6b7280" onmouseenter="this.style.color='#f87171'" onmouseleave="this.style.color='#6b7280'" onclick="confirmDel('priority',${p.id})"><span class="ms ms-sm">delete</span></button>
       </div>
     </div>`).join('')}
   </div></div>`;

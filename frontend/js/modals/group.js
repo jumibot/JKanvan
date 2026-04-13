@@ -20,7 +20,7 @@ function mGroup(id) {
         <label class="lbl">Color</label>
         ${swatches(col,'color')}
       </div>
-      ${mfoot(g?'Guardar':'Crear grupo de tareas', !!g, `confirmDel('group',${id},${jsq(g?.name||'')});closeM()`)}
+      ${mfoot(g?'Guardar':'Crear grupo de tareas', !!g, `confirmDel('group',${id});closeM()`)}
     </form>`);
 }
 
@@ -47,7 +47,7 @@ function mColMenu(id) {
         <span class="ms ms-sm" style="color:#F97316">edit</span>Editar grupo de tareas
       </button>
       <div class="border-t my-1" style="border-color:rgba(255,255,255,.06)"></div>
-      <button class="flex items-center gap-3 p-3 rounded-xl text-red-400 hover:bg-red-500/10 transition-all text-sm" onclick="confirmDel('group',${id},${jsq(g?.name||'')})">
+      <button class="flex items-center gap-3 p-3 rounded-xl text-red-400 hover:bg-red-500/10 transition-all text-sm" onclick="confirmDel('group',${id})">
         <span class="ms ms-sm">delete</span>Eliminar grupo de tareas
       </button>
     </div>`);

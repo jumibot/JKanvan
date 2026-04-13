@@ -24,7 +24,7 @@ function vProjectTags() {
       </div>
       ${canManage ? `<div class="flex gap-0.5">
         <button class="btn-icon" onclick="mTag(${t.id})"><span class="ms ms-sm">edit</span></button>
-        <button class="btn-icon" style="color:#6b7280" onmouseenter="this.style.color='#f87171'" onmouseleave="this.style.color='#6b7280'" onclick="confirmDel('tag',${t.id},${jsq(t.name)})"><span class="ms ms-sm">delete</span></button>
+        <button class="btn-icon" style="color:#6b7280" onmouseenter="this.style.color='#f87171'" onmouseleave="this.style.color='#6b7280'" onclick="confirmDel('tag',${t.id})"><span class="ms ms-sm">delete</span></button>
       </div>` : ''}
     </div>`).join('')}
     ${canManage ? `<button class="glass-card rounded-2xl p-4 flex items-center justify-center gap-2 text-slate-600 hover:text-primary hover:border-primary/25 transition-all text-sm font-medium" style="border:2px dashed rgba(100,116,139,.18)" onclick="mTag()">
@@ -49,7 +49,7 @@ function vTags() {
       </div>
       <div class="flex gap-0.5">
         <button class="btn-icon" onclick="mTag(${t.id})"><span class="ms ms-sm">edit</span></button>
-        <button class="btn-icon" style="color:#6b7280" onmouseenter="this.style.color='#f87171'" onmouseleave="this.style.color='#6b7280'" onclick="confirmDel('tag',${t.id},${jsq(t.name)})"><span class="ms ms-sm">delete</span></button>
+        <button class="btn-icon" style="color:#6b7280" onmouseenter="this.style.color='#f87171'" onmouseleave="this.style.color='#6b7280'" onclick="confirmDel('tag',${t.id})"><span class="ms ms-sm">delete</span></button>
       </div>
     </div>`).join('')}
   </div></div>`;
