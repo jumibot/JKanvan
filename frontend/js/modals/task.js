@@ -78,7 +78,7 @@ function mTask(taskId, groupId) {
         </div>
       </div>
       <div class="px-6 sm:px-8 py-4 flex items-center justify-between border-t border-slate-700/20 gap-4">
-        <div>${isEdit ? `<button type="button" class="btn btn-danger" onclick="confirmDel('task',${taskId},'${t?.title||''}');closeM()">Eliminar</button>` : ''}</div>
+        <div>${isEdit ? `<button type="button" class="btn btn-danger" onclick="confirmDel('task',${taskId});closeM()">Eliminar</button>` : ''}</div>
         <div class="flex items-center gap-3">
           <button type="button" onclick="closeM()" class="px-5 py-2 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-800 transition-colors">Cancelar</button>
           <button type="submit" class="px-8 py-2 rounded-xl text-sm font-extrabold bg-orange-500 text-white shadow-lg shadow-orange-500/30 hover:brightness-110 active:scale-95 transition-all">${isEdit?'Guardar':'Crear Tarea'}</button>

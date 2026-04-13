@@ -48,7 +48,16 @@ async function execCascadeDelProject(e, projectId) {
 // ── Generic confirm delete ────────
 const DEL_LABELS = {project:'proyecto',group:'grupo de tareas',task:'tarea',tag:'etiqueta',priority:'prioridad',user:'usuario'};
 
-function confirmDel(type, id, name) {
+function confirmDel(type, id) {
+  const NAME_SOURCES = {
+    tag:      () => S.tags.find(x => x.id === id)?.name,
+    priority: () => S.priorities.find(x => x.id === id)?.name,
+    group:    () => S.groups.find(x => x.id === id)?.name,
+    task:     () => S.tasks.find(x => x.id === id)?.title,
+    project:  () => S.projects.find(x => x.id === id)?.name,
+    user:     () => S.users.find(x => x.id === id)?.name,
+  };
+  const name = NAME_SOURCES[type]?.() ?? '';
   let extra = '';
   if (type === 'group') {
     const taskCount = S.tasks.filter(t => t.group_id === id).length;
