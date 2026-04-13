@@ -10,7 +10,8 @@ async function route() {
     S.view='team'; S.pid=null; S.tags=[]; S.priorities=[]; S.members=[]; S.subview='kanban';
   } else if (h.startsWith('#/board/')) {
     const parts = h.split('/');
-    const newPid = parseInt(parts[2]);
+    const newPid = parseInt(parts[2], 10);
+    if (!Number.isFinite(newPid)) { go('#/'); return; }
     const sub = parts[3] || 'kanban';
     if (newPid !== S.pid) {
       S.pid = newPid;

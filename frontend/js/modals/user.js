@@ -103,11 +103,14 @@ function mAdminEditUser(userId) {
         <label class="lbl">URL de Avatar</label>
         <input name="avatar_url" class="inp" placeholder="https://..." value="${esc(u.avatar_url||'')}">
       </div>
-      <div class="mb-4 flex items-center gap-3 px-1">
-        <input type="checkbox" name="is_admin" id="chk-adm-${userId}" class="w-4 h-4 accent-primary cursor-pointer" ${u.is_admin?'checked':''}>
-        <label for="chk-adm-${userId}" class="text-sm text-slate-300 cursor-pointer flex items-center gap-1.5">
-          <span class="ms ms-sm" style="color:#A78BFA">shield</span>Administrador de plataforma
-        </label>
+      <div class="mb-4 px-1">
+        <div class="flex items-center gap-3">
+          <input type="checkbox" name="is_admin" id="chk-adm-${userId}" class="w-4 h-4 accent-primary ${isMe?'cursor-not-allowed opacity-50':'cursor-pointer'}" ${u.is_admin?'checked':''} ${isMe?'disabled':''}>
+          <label for="chk-adm-${userId}" class="text-sm ${isMe?'text-slate-500 cursor-not-allowed':'text-slate-300 cursor-pointer'} flex items-center gap-1.5">
+            <span class="ms ms-sm" style="color:${isMe?'#6b7280':'#A78BFA'}">shield</span>Administrador de plataforma
+          </label>
+        </div>
+        ${isMe ? `<p class="text-xs text-slate-600 mt-1.5 pl-7">No puedes retirar tus propios privilegios de administrador.</p>` : ''}
       </div>
       ${mfoot('Guardar', false)}
     </form>`);
@@ -121,7 +124,7 @@ async function saveAdminUser(e, userId) {
   if (f.email.value)    b.email = f.email.value;
   if (f.password.value) b.password = f.password.value;
   b.avatar_url = f.avatar_url.value || null;
-  b.is_admin = f.is_admin.checked;
+  if (userId !== S.currentUser?.id) b.is_admin = f.is_admin.checked;
   try {
     const updated = await PATCH(`/users/${userId}`, b);
     if (userId === S.currentUser?.id) saveAuth(getToken(), updated);
