@@ -2,6 +2,20 @@
 // VIEW: Dashboard
 // ═══════════════════════════════════
 function vDashboard() {
+  // Precompute in O(G + T) so each projCard renders in O(1)
+  const groupPid    = new Map(S.groups.map(g => [g.id, g.project_id]));
+  const groupCounts = new Map();
+  for (const g of S.groups) groupCounts.set(g.project_id, (groupCounts.get(g.project_id) ?? 0) + 1);
+  const taskStats = new Map(); // projectId -> {total, done}
+  for (const t of S.tasks) {
+    const pid = groupPid.get(t.group_id);
+    if (pid == null) continue;
+    const s = taskStats.get(pid) ?? {total: 0, done: 0};
+    s.total++;
+    if (t.completed) s.done++;
+    taskStats.set(pid, s);
+  }
+
   if (!S.projects.length) return `
     <div class="flex flex-col items-center justify-center h-full text-center px-4">
       <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-5" style="background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.18)">
@@ -28,7 +42,7 @@ function vDashboard() {
       <p class="text-xs text-slate-600 mt-0.5">${S.projects.length} proyecto${S.projects.length!==1?'s':''} activos</p>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-      ${S.projects.map(projCard).join('')}
+      ${S.projects.map(p => projCard(p, taskStats, groupCounts)).join('')}
       <div class="glass-card rounded-2xl p-5 flex flex-col items-center justify-center text-center cursor-pointer min-h-[180px] hover:border-primary/30 transition-colors"
            style="border:2px dashed rgba(100,116,139,.18)" onclick="mProject()">
         <span class="ms mb-2" style="font-size:26px;color:#334155">add_circle</span>
@@ -38,11 +52,10 @@ function vDashboard() {
   </div>`;
 }
 
-function projCard(p) {
-  const grps  = S.groups.filter(g => g.project_id === p.id);
-  const tasks = S.tasks.filter(t => grps.some(g => g.id === t.group_id));
-  const done  = tasks.filter(t => t.completed).length;
-  const pct   = tasks.length ? Math.round(done/tasks.length*100) : 0;
+function projCard(p, taskStats, groupCounts) {
+  const { total = 0, done = 0 } = taskStats?.get(p.id) ?? {};
+  const grpCount = groupCounts?.get(p.id) ?? 0;
+  const pct = total ? Math.round(done / total * 100) : 0;
   return `
     <div class="proj-card glass-card rounded-2xl p-5" onclick="go('#/board/${p.id}')">
       <div class="flex items-start justify-between mb-3">
@@ -64,9 +77,9 @@ function projCard(p) {
       ${p.description ? `<p class="text-xs text-slate-500 mb-3 line-clamp-2">${esc(p.description)}</p>` : '<div class="mb-3"></div>'}
       <div class="prog-track mb-1.5"><div class="prog-fill" style="width:${pct}%"></div></div>
       <div class="flex items-center justify-between">
-        <div class="text-xs text-slate-600">${done}/${tasks.length} tareas</div>
+        <div class="text-xs text-slate-600">${done}/${total} tareas</div>
         <div class="flex items-center gap-2">
-          <span class="text-xs text-slate-700">${grps.length} col</span>
+          <span class="text-xs text-slate-700">${grpCount} col</span>
           ${p.members.length ? `<div class="flex -space-x-1">${p.members.slice(0,3).map(m=>avatar(m,'sm')).join('')}${p.members.length>3?`<div style="width:22px;height:22px;border-radius:50%;background:rgba(249,115,22,.2);border:1.5px solid rgba(249,115,22,.3);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#F97316">+${p.members.length-3}</div>`:''}</div>` : ''}
           ${p.leader ? avatar(p.leader,'sm') : ''}
         </div>
