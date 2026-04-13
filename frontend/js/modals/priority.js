@@ -21,7 +21,7 @@ function mProjectPriorities(pid) {
           </div>
           ${canManage ? `<div class="flex gap-0.5">
             <button class="btn-icon" onclick="closeM();mPriority(${pr.id})"><span class="ms ms-sm">edit</span></button>
-            <button class="btn-icon" style="color:#6b7280" onmouseenter="this.style.color='#f87171'" onmouseleave="this.style.color='#6b7280'" onclick='closeM();confirmDel("priority",${pr.id},${JSON.stringify(pr.name)})'><span class="ms ms-sm">delete</span></button>
+            <button class="btn-icon" style="color:#6b7280" onmouseenter="this.style.color='#f87171'" onmouseleave="this.style.color='#6b7280'" onclick="closeM();confirmDel('priority',${pr.id},${jsq(pr.name)})"><span class="ms ms-sm">delete</span></button>
           </div>` : ''}
         </div>`).join('')
     : `<p class="text-slate-500 text-sm text-center py-6">${canManage ? 'Sin prioridades. Crea la primera.' : 'Este proyecto no tiene prioridades aún.'}</p>`;
