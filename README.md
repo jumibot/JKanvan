@@ -36,6 +36,15 @@ Aplicación de gestión de tareas estilo Kanban con soporte multiproyecto, equip
 - Sesión persistida en `localStorage`
 - Roles: usuario estándar y administrador
 
+### Administración de plataforma
+Funciones exclusivas para usuarios con rol **admin**:
+- Crear usuarios directamente desde el panel (sin pasar por el registro público)
+- Editar cualquier usuario: nombre, email, contraseña, avatar
+- Promover o revocar el rol de administrador en cualquier cuenta (no en la propia)
+- Eliminación en cascada de usuarios con previsualización del impacto: muestra los proyectos que serán borrados junto con el recuento de grupos, tareas, etiquetas, prioridades y miembros afectados
+- La eliminación requiere confirmación con la contraseña del admin como segunda verificación
+- Un admin no puede eliminarse ni revocar sus propios privilegios
+
 ---
 
 ## Tecnologías
