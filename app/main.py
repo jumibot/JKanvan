@@ -1,6 +1,7 @@
 from pathlib import Path
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from app.infrastructure.database import init_db
 from app.interfaces.routers import admin, auth, groups, priorities, projects, tags, tasks, todos
 from app.interfaces.routers import users
@@ -20,12 +21,14 @@ app.include_router(todos.router)
 app.include_router(tags.router)
 app.include_router(tags.assign_router)
 
-_KANBAN = Path(__file__).parent / "interfaces" / "static" / "index.html"
+_FRONTEND = Path(__file__).parent.parent / "frontend"
+
+app.mount("/static", StaticFiles(directory=_FRONTEND), name="frontend")
 
 
 @app.get("/", include_in_schema=False)
 def kanban():
-    return FileResponse(_KANBAN)
+    return FileResponse(_FRONTEND / "index.html")
 
 
 @app.get("/health")
