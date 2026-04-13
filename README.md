@@ -189,6 +189,100 @@ SPA de página única sin framework ni bundler. `index.html` carga los módulos 
 
 ---
 
+## API — Endpoints
+
+La API completa está disponible en modo interactivo en `http://127.0.0.1:8000/docs` (Swagger UI) una vez arrancado el servidor.
+
+### Autenticación
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `POST` | `/auth/login` | Obtener token JWT |
+
+### Usuarios
+
+| Método | Ruta | Descripción | Auth |
+|---|---|---|---|
+| `POST` | `/users/` | Registrar nuevo usuario | No |
+| `GET` | `/users/` | Listar todos los usuarios | Sí |
+| `GET` | `/users/{id}` | Obtener usuario por ID | Sí |
+| `PATCH` | `/users/{id}` | Actualizar usuario (self o admin) | Sí |
+| `DELETE` | `/users/{id}` | Eliminar usuario (self o admin) | Sí |
+| `GET` | `/users/{id}/projects` | Proyectos del usuario con su rol | Sí |
+
+### Proyectos
+
+| Método | Ruta | Descripción | Auth |
+|---|---|---|---|
+| `POST` | `/projects/` | Crear proyecto | Sí |
+| `GET` | `/projects/` | Listar proyectos | Sí |
+| `GET` | `/projects/{id}` | Obtener proyecto por ID | Sí |
+| `PATCH` | `/projects/{id}` | Actualizar proyecto | Sí |
+| `DELETE` | `/projects/{id}` | Eliminar proyecto | Sí |
+| `GET` | `/projects/{id}/groups` | Grupos del proyecto | Sí |
+| `GET` | `/projects/{id}/members` | Miembros del proyecto | Sí |
+| `POST` | `/projects/{id}/members/{uid}` | Añadir miembro | Sí |
+| `DELETE` | `/projects/{id}/members/{uid}` | Eliminar miembro | Sí |
+| `GET` | `/projects/{id}/role/{uid}` | Rol de un usuario en el proyecto | Sí |
+| `GET` | `/projects/{id}/deletion-preview` | Previsualizar impacto del borrado | Sí |
+| `DELETE` | `/projects/{id}/cascade` | Eliminar proyecto y todo su contenido | Sí |
+
+### Grupos de tareas
+
+| Método | Ruta | Descripción | Auth |
+|---|---|---|---|
+| `POST` | `/groups/` | Crear grupo | Sí |
+| `GET` | `/groups/` | Listar grupos | Sí |
+| `GET` | `/groups/{id}` | Obtener grupo por ID | Sí |
+| `PATCH` | `/groups/{id}` | Actualizar grupo | Sí |
+| `DELETE` | `/groups/{id}` | Eliminar grupo | Sí |
+| `GET` | `/groups/{id}/tasks` | Tareas del grupo | Sí |
+| `PATCH` | `/groups/reorder` | Reordenar columnas del tablero | Sí |
+| `PATCH` | `/groups/{id}/tasks/reorder` | Reordenar tareas dentro del grupo | Sí |
+
+### Tareas
+
+| Método | Ruta | Descripción | Auth |
+|---|---|---|---|
+| `POST` | `/tasks/` | Crear tarea | Sí |
+| `GET` | `/tasks/` | Listar tareas | Sí |
+| `GET` | `/tasks/{id}` | Obtener tarea por ID | Sí |
+| `PATCH` | `/tasks/{id}` | Actualizar tarea | Sí |
+| `DELETE` | `/tasks/{id}` | Eliminar tarea | Sí |
+| `GET` | `/tasks/{id}/todos` | Listar subtareas | Sí |
+| `POST` | `/tasks/{id}/todos` | Crear subtarea | Sí |
+| `PATCH` | `/tasks/{id}/todos/{tid}` | Actualizar subtarea | Sí |
+| `DELETE` | `/tasks/{id}/todos/{tid}` | Eliminar subtarea | Sí |
+
+### Etiquetas
+
+| Método | Ruta | Descripción | Auth |
+|---|---|---|---|
+| `POST` | `/projects/{id}/tags/` | Crear etiqueta | Sí |
+| `GET` | `/projects/{id}/tags/` | Listar etiquetas del proyecto | Sí |
+| `GET` | `/projects/{id}/tags/{tid}` | Obtener etiqueta | Sí |
+| `PATCH` | `/projects/{id}/tags/{tid}` | Actualizar etiqueta | Sí |
+| `DELETE` | `/projects/{id}/tags/{tid}` | Eliminar etiqueta | Sí |
+
+### Prioridades
+
+| Método | Ruta | Descripción | Auth |
+|---|---|---|---|
+| `POST` | `/projects/{id}/priorities/` | Crear prioridad | Sí |
+| `GET` | `/projects/{id}/priorities/` | Listar prioridades del proyecto | Sí |
+| `GET` | `/projects/{id}/priorities/{pid}` | Obtener prioridad | Sí |
+| `PATCH` | `/projects/{id}/priorities/{pid}` | Actualizar prioridad | Sí |
+| `DELETE` | `/projects/{id}/priorities/{pid}` | Eliminar prioridad | Sí |
+
+### Administración
+
+| Método | Ruta | Descripción | Auth |
+|---|---|---|---|
+| `GET` | `/admin/users/{id}/deletion-preview` | Previsualizar borrado de usuario en cascada | Admin |
+| `DELETE` | `/admin/users/{id}/cascade` | Eliminar usuario y todos sus proyectos | Admin |
+
+---
+
 ## Arranque en desarrollo
 
 ```powershell
