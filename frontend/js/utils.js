@@ -4,6 +4,13 @@
 function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
+// Encode a value as a JS string literal safe to embed in a double-quoted HTML attribute.
+// JSON.stringify produces a double-quoted string so single quotes never need escaping here;
+// escaping them would corrupt the value seen by the JS engine.
+// Usage: onclick="fn(${jsq(name)})"  →  onclick="fn(&quot;safe value&quot;)"
+function jsq(s) {
+  return JSON.stringify(String(s||'')).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 function inits(n) { return n.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
 function hashCol(n) {
   const cs=['#F97316','#EF4444','#8B5CF6','#3B82F6','#10B981','#F59E0B','#EC4899','#14B8A6'];
