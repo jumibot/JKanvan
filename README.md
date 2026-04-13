@@ -6,6 +6,27 @@ La aplicación incluye gestión de equipos por proyecto —con roles de owner, l
 
 El backend expone una API REST construida con FastAPI y persiste los datos en SQLite. El frontend es una SPA en Vanilla JS servida directamente por el propio backend, sin dependencias de frameworks ni proceso de build.
 
+## Índice
+
+- [Funcionalidades](#funcionalidades)
+  - [Proyectos](#proyectos)
+  - [Tablero Kanban](#tablero-kanban)
+  - [Tareas](#tareas)
+  - [Etiquetas y Prioridades](#etiquetas-y-prioridades)
+  - [Equipo](#equipo)
+  - [Autenticación](#autenticación)
+  - [Administración de plataforma](#administración-de-plataforma)
+- [Tecnologías](#tecnologías)
+- [Estructura del repositorio](#estructura-del-repositorio)
+  - [Nivel raíz](#nivel-raíz)
+  - [Backend](#backend--backend)
+  - [Frontend](#frontend--frontend)
+- [API — Endpoints](#api--endpoints)
+- [Arranque en desarrollo](#arranque-en-desarrollo)
+- [Tests](#tests)
+
+---
+
 ## Funcionalidades
 
 ### Proyectos
