@@ -102,7 +102,9 @@ async function doRegister(e) {
 function doLogout() {
   clearAuth();
   showAuthWall();
-  // Reset state
-  S.projects=[]; S.groups=[]; S.tasks=[]; S.users=[]; S.tags=[]; S.priorities=[];
-  S.view='dashboard'; S.pid=null; location.hash='#/';
+  // Reset state — clear all in-memory data including project-scoped collections
+  S.projects=[]; S.groups=[]; S.tasks=[]; S.users=[];
+  S.tags=[]; S.priorities=[]; S.members=[];
+  S.view='dashboard'; S.pid=null; S.subview='kanban'; S.currentUser=null;
+  location.hash='#/';
 }
