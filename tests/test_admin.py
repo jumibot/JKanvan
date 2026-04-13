@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-import app.infrastructure.database as db_module
+import backend.infrastructure.database as db_module
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
