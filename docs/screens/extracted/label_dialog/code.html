@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-dim": "#efad16",
+              "on-tertiary-fixed": "#3c2900",
+              "on-error": "#450900",
+              "surface-container-highest": "#1a253f",
+              "primary-fixed-dim": "#f06c0b",
+              "on-primary-fixed-variant": "#4e1e00",
+              "surface-container-lowest": "#000000",
+              "secondary-container": "#00687a",
+              "secondary-fixed-dim": "#48d4f3",
+              "surface-container": "#0f192f",
+              "on-secondary": "#004b58",
+              "primary-fixed": "#ff7a23",
+              "on-tertiary": "#614400",
+              "surface-container-low": "#0a1327",
+              "on-surface-variant": "#a3abc2",
+              "surface": "#060e1f",
+              "on-tertiary-fixed-variant": "#614400",
+              "on-secondary-fixed-variant": "#005969",
+              "secondary-fixed": "#65e1ff",
+              "on-primary": "#511f00",
+              "outline": "#6d758b",
+              "on-primary-container": "#3f1700",
+              "surface-bright": "#1f2c47",
+              "tertiary-container": "#febb28",
+              "surface-variant": "#1a253f",
+              "on-tertiary-container": "#563b00",
+              "surface-tint": "#ff9153",
+              "tertiary": "#ffcd72",
+              "outline-variant": "#40485c",
+              "on-secondary-container": "#ecfaff",
+              "surface-container-high": "#141f37",
+              "on-secondary-fixed": "#003a45",
+              "error": "#ff7351",
+              "error-dim": "#d53d18",
+              "inverse-surface": "#faf8ff",
+              "surface-dim": "#060e1f",
+              "on-surface": "#dde5fe",
+              "on-error-container": "#ffd2c8",
+              "error-container": "#b92902",
+              "primary-dim": "#fd761a",
+              "primary-container": "#ff7a23",
+              "inverse-on-surface": "#4d556a",
+              "tertiary-fixed": "#febb28",
+              "background": "#060e1f",
+              "tertiary-fixed-dim": "#efad16",
+              "secondary": "#53ddfc",
+              "on-background": "#dde5fe",
+              "on-primary-fixed": "#000000",
+              "primary": "#ff9153",
+              "secondary-dim": "#40ceed",
+              "inverse-primary": "#9e4400"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex overflow-hidden">
+<!-- SideNavBar Anchor -->
+<aside class="flex flex-col h-full py-8 px-4 h-screen w-64 border-r-0 bg-[#060e1f] shadow-[0px_12px_32px_rgba(221,229,254,0.04)] z-10">
+<div class="flex flex-col mb-12 px-2">
+<div class="flex items-center gap-3 mb-1">
+<span class="text-xl font-bold text-[#ff9153] tracking-tighter">Project Control</span>
+</div>
+<span class="text-xs font-['Inter'] tracking-wide text-[#dde5fe] opacity-50 uppercase">Kinetic Precision</span>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-['Inter'] text-sm tracking-wide text-[#dde5fe] opacity-70 hover:bg-[#ff9153]/10 hover:text-[#ff9153] transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+                All Projects
+            </a>
+<!-- Active State Logic: Labels is active for 'Manage Labels' context -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-['Inter'] text-sm tracking-wide text-[#ff9153] font-semibold bg-[#0b1426]" href="#">
+<span class="material-symbols-outlined" data-icon="label">label</span>
+                Labels
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-['Inter'] text-sm tracking-wide text-[#dde5fe] opacity-70 hover:bg-[#ff9153]/10 hover:text-[#ff9153] transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="priority_high">priority_high</span>
+                Priorities
+            </a>
+</nav>
+<div class="mt-auto border-t border-outline-variant/20 pt-4">
+<button class="w-full bg-primary py-3 mb-4 rounded-xl text-on-primary-fixed font-bold text-sm tracking-tight scale-95 active:scale-90 duration-150 transition-transform">
+                    New Label
+                </button><a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-['Inter'] text-sm tracking-wide text-[#dde5fe] opacity-70 hover:bg-[#ff9153]/10 hover:text-[#ff9153] transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Logout
+            </a>
+</div>
+</aside>
+<div class="flex-1 flex flex-col relative">
+<!-- TopNavBar Anchor -->
+<header class="flex justify-between items-center w-full h-16 px-8 docked full-width top-0 z-40 bg-[#060e1f]/80 backdrop-blur-xl">
+<div class="text-2xl font-black text-[#ff9153] tracking-tighter">JKanban</div>
+<div class="flex-1 max-w-xl mx-12">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-1 focus:ring-primary/40 transition-all placeholder:text-outline/50" placeholder="Search boards..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full text-[#dde5fe] opacity-80 hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 rounded-full text-[#dde5fe] opacity-80 hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-primary/20">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="close-up portrait of a professional male designer with creative eyewear and a confident smile in soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASdOD1qhXIsa11l17krxKYbV48rjUOIEamx2j-VlU285spDY7pZC0iKiSLv8r6v_dIm0g67GJgZV37P2T7YvuM9WGpwlLG_TN13OrXW-etc2L1rsSFYBRNJMpeZxqcSnFx_DxqrlZty6T0PHM25nBCZCym04zXpCSrK-gYG1Z0g571GP_ceN52OFzYB4B2_2Xc7PVNgdsXQcaji2dGlkZWt6UXKEsJmhnR4ElECzdF7mZLWeWp__eCaOi4uLDmj-ti4BjEFzbrKtO4"/>
+</div>
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary-fixed px-5 py-2 rounded-full text-sm font-bold shadow-lg shadow-primary/10">
+                    Create New
+                </button>
+</div>
+</header>
+<!-- Main Content (Initial State Placeholder) -->
+<main class="flex-1 p-10 flex flex-col bg-surface overflow-y-auto">
+<div class="flex flex-col items-center justify-center flex-1 space-y-8">
+<div class="w-32 h-32 rounded-full bg-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl text-primary/20" style="font-variation-settings: 'FILL' 1;">dashboard_customize</span>
+</div>
+<div class="text-center">
+<h1 class="text-4xl font-bold text-on-surface mb-2 tracking-tight">Ready to start?</h1>
+<p class="text-on-surface-variant max-w-md mx-auto">Build your first Kanban workflow. Drag, drop, and illuminate your progress with precision.</p>
+</div>
+<button class="px-8 py-3 bg-surface-container-highest border border-primary/20 rounded-xl text-primary font-bold hover:bg-primary/5 transition-all">
+                    Initialize Workspace
+                </button>
+</div>
+</main>
+<!-- Contextual Dialog Overlay -->
+<div class="absolute inset-0 z-50 flex items-center justify-center bg-surface/60 backdrop-blur-md px-6">
+<!-- Modal Dialog -->
+<div class="w-full max-w-md bg-surface-container-high/80 backdrop-blur-xl rounded-[24px] shadow-[0px_24px_64px_rgba(0,0,0,0.4)] border border-primary/10 overflow-hidden">
+<div class="p-8">
+<!-- Modal Header -->
+<div class="flex justify-between items-start mb-8">
+<div>
+<h2 class="text-2xl font-bold text-on-surface tracking-tight">Manage Labels</h2>
+<p class="text-sm text-on-surface-variant">Create a new label for your task groups</p>
+</div>
+<button class="p-2 text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<!-- Modal Body / Form -->
+<div class="space-y-8">
+<!-- Label Name -->
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-primary uppercase tracking-[0.1em]">Label Name</label>
+<input class="w-full bg-transparent border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 px-0 py-2 text-on-surface placeholder:text-outline-variant transition-all" placeholder="e.g. Critical Bug" type="text"/>
+</div>
+<!-- Icon Selector -->
+<div class="space-y-3">
+<label class="text-[10px] font-bold text-primary uppercase tracking-[0.1em]">Label Icon</label>
+<div class="grid grid-cols-6 gap-3">
+<button class="aspect-square rounded-xl bg-surface-container-highest flex items-center justify-center border-2 border-primary text-primary transition-all">
+<span class="material-symbols-outlined text-xl" data-icon="bug_report">bug_report</span>
+</button>
+<button class="aspect-square rounded-xl bg-surface-container-low flex items-center justify-center border-2 border-transparent text-on-surface-variant hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined text-xl" data-icon="rocket_launch">rocket_launch</span>
+</button>
+<button class="aspect-square rounded-xl bg-surface-container-low flex items-center justify-center border-2 border-transparent text-on-surface-variant hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined text-xl" data-icon="bolt">bolt</span>
+</button>
+<button class="aspect-square rounded-xl bg-surface-container-low flex items-center justify-center border-2 border-transparent text-on-surface-variant hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined text-xl" data-icon="verified">verified</span>
+</button>
+<button class="aspect-square rounded-xl bg-surface-container-low flex items-center justify-center border-2 border-transparent text-on-surface-variant hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined text-xl" data-icon="flag">flag</span>
+</button>
+<button class="aspect-square rounded-xl bg-surface-container-low flex items-center justify-center border-2 border-transparent text-on-surface-variant hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined text-xl" data-icon="category">category</span>
+</button>
+</div>
+</div>
+<!-- Color Palette -->
+<div class="space-y-3">
+<label class="text-[10px] font-bold text-primary uppercase tracking-[0.1em]">Color Palette</label>
+<div class="flex flex-wrap gap-4">
+<button class="w-8 h-8 rounded-full bg-[#ff9153] ring-4 ring-offset-4 ring-offset-surface-container-high ring-[#ff9153]/20"></button>
+<button class="w-8 h-8 rounded-full bg-[#53ddfc] hover:scale-110 transition-transform"></button>
+<button class="w-8 h-8 rounded-full bg-[#ffcd72] hover:scale-110 transition-transform"></button>
+<button class="w-8 h-8 rounded-full bg-[#ff7351] hover:scale-110 transition-transform"></button>
+<button class="w-8 h-8 rounded-full bg-[#a3abc2] hover:scale-110 transition-transform"></button>
+<button class="w-8 h-8 rounded-full bg-[#8253ff] hover:scale-110 transition-transform"></button>
+<button class="w-8 h-8 rounded-full bg-[#22c55e] hover:scale-110 transition-transform"></button>
+</div>
+</div>
+</div>
+<!-- Modal Actions -->
+<div class="mt-12 flex gap-4">
+<button class="flex-1 py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary-fixed rounded-xl font-bold shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                            Create Label
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

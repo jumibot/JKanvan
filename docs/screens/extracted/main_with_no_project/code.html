@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>JKanban - Precision Workflow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary-fixed": "#ff7a23",
+            "primary": "#ff9153",
+            "on-tertiary": "#614400",
+            "secondary-fixed": "#65e1ff",
+            "surface-variant": "#1a253f",
+            "inverse-surface": "#faf8ff",
+            "background": "#060e1f",
+            "inverse-primary": "#9e4400",
+            "on-secondary": "#004b58",
+            "secondary": "#53ddfc",
+            "primary-fixed-dim": "#f06c0b",
+            "on-secondary-fixed-variant": "#005969",
+            "on-surface-variant": "#a3abc2",
+            "surface-container-low": "#0a1327",
+            "on-tertiary-container": "#563b00",
+            "surface-dim": "#060e1f",
+            "surface-container-high": "#141f37",
+            "outline": "#6d758b",
+            "on-background": "#dde5fe",
+            "on-primary-container": "#3f1700",
+            "inverse-on-surface": "#4d556a",
+            "surface-bright": "#1f2c47",
+            "secondary-fixed-dim": "#48d4f3",
+            "on-secondary-fixed": "#003a45",
+            "surface-container-highest": "#1a253f",
+            "surface": "#060e1f",
+            "tertiary": "#ffcd72",
+            "on-primary-fixed": "#000000",
+            "tertiary-fixed-dim": "#efad16",
+            "on-primary-fixed-variant": "#4e1e00",
+            "on-tertiary-fixed-variant": "#614400",
+            "error": "#ff7351",
+            "tertiary-dim": "#efad16",
+            "surface-tint": "#ff9153",
+            "surface-container-lowest": "#000000",
+            "outline-variant": "#40485c",
+            "error-container": "#b92902",
+            "primary-dim": "#fd761a",
+            "on-tertiary-fixed": "#3c2900",
+            "on-secondary-container": "#ecfaff",
+            "tertiary-fixed": "#febb28",
+            "secondary-dim": "#40ceed",
+            "error-dim": "#d53d18",
+            "primary-container": "#ff7a23",
+            "on-surface": "#dde5fe",
+            "surface-container": "#0f192f",
+            "on-primary": "#511f00",
+            "on-error-container": "#ffd2c8",
+            "on-error": "#450900",
+            "tertiary-container": "#febb28",
+            "secondary-container": "#00687a"
+          },
+          fontFamily: {
+            "headline": ["Inter"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      background-color: #060e1f;
+      color: #dde5fe;
+      font-family: 'Inter', sans-serif;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .glass-effect {
+      background: rgba(20, 31, 55, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .neon-glow {
+      box-shadow: 0 0 20px rgba(255, 145, 83, 0.15);
+    }
+  </style>
+</head>
+<body class="overflow-hidden flex h-screen">
+<!-- SideNavBar Anchor -->
+<aside class="hidden md:flex flex-col py-6 px-4 gap-y-2 h-full w-64 bg-[#060e1f] font-['Inter'] text-sm font-medium">
+<div class="mb-10 px-2">
+<h1 class="text-xl font-black text-[#dde5fe]">JKanban</h1>
+<p class="text-[10px] uppercase tracking-widest text-primary font-bold">Precision Workflow</p>
+</div>
+<nav class="flex flex-col gap-y-1 flex-1">
+<!-- Active Item: All Projects (Default for initial state) -->
+<a class="flex items-center gap-3 px-4 py-3 text-orange-500 font-bold hover:bg-[#0f172a] hover:text-[#dde5fe] rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+<span>All Projects</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#dde5fe]/60 hover:bg-[#0f172a] hover:text-[#dde5fe] rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="label">label</span>
+<span>Labels</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#dde5fe]/60 hover:bg-[#0f172a] hover:text-[#dde5fe] rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="priority_high">priority_high</span>
+<span>Priorities</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant/20 pt-4">
+<a class="flex items-center gap-3 px-4 py-3 text-[#dde5fe]/60 hover:bg-[#0f172a] hover:text-[#dde5fe] rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="flex-1 flex flex-col relative bg-background overflow-hidden">
+<!-- TopNavBar Anchor -->
+<header class="flex justify-between items-center px-8 h-16 w-full bg-[#060e1f] font-['Inter'] text-sm tracking-tight relative z-20">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-bold tracking-tighter text-[#dde5fe] hidden md:block">JKanban</span>
+<div class="flex items-center gap-6">
+<a class="text-orange-500 border-b-2 border-orange-500 pb-1 font-medium transition-colors duration-200" href="#">Projectspace</a>
+<a class="text-[#dde5fe]/70 hover:text-orange-400 transition-colors duration-200" href="#">Insights</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Content Area: The Neon Observatory -->
+<section class="flex-1 flex items-center justify-center p-8 relative">
+<!-- Ambient Background Elements -->
+<div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/5 rounded-full blur-[100px] pointer-events-none"></div>
+<!-- Onboarding Hero Section -->
+<div class="max-w-4xl w-full text-center z-10">
+<div class="mb-8 flex justify-center">
+<div class="w-24 h-24 rounded-2xl bg-surface-container-high glass-effect border border-primary/20 flex items-center justify-center neon-glow">
+<span class="material-symbols-outlined text-primary text-5xl" data-icon="rocket_launch">rocket_launch</span>
+</div>
+</div>
+<h2 class="text-5xl md:text-7xl font-bold tracking-tighter text-on-background mb-6 leading-tight">
+          Ready to launch your <br/>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-container">first vision?</span>
+</h2>
+<p class="text-lg md:text-xl text-on-surface-variant max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+          Your Projectspace is currently a silent void. Transform it into a command center for your next breakthrough. High-precision task tracking starts here.
+        </p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+<button class="px-8 py-4 bg-gradient-to-r from-primary to-primary-container rounded-xl text-on-primary-fixed font-bold text-lg hover:scale-105 transition-all duration-300 active:scale-95 flex items-center gap-2 group shadow-lg shadow-primary/20">
+            Create Your First Project
+            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<button class="px-8 py-4 bg-transparent text-secondary border border-secondary/20 rounded-xl font-medium hover:bg-secondary/5 transition-colors">
+            View Tutorials
+          </button>
+</div>
+<!-- Secondary Information / Bento Grid Lite -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20">
+<div class="p-6 glass-effect rounded-xl border border-outline-variant/10 text-left hover:border-primary/30 transition-colors cursor-default">
+<span class="material-symbols-outlined text-secondary mb-4 block" data-icon="auto_awesome">auto_awesome</span>
+<h4 class="text-on-surface font-semibold mb-2">Infinite Scaling</h4>
+<p class="text-on-surface-variant text-sm">Boards designed to handle complex workflows without visual clutter.</p>
+</div>
+<div class="p-6 glass-effect rounded-xl border border-outline-variant/10 text-left hover:border-primary/30 transition-colors cursor-default">
+<span class="material-symbols-outlined text-secondary mb-4 block" data-icon="speed">speed</span>
+<h4 class="text-on-surface font-semibold mb-2">Kinetic Drag</h4>
+<p class="text-on-surface-variant text-sm">Spring-physics interactions that make organizing feel tactile and responsive.</p>
+</div>
+<div class="p-6 glass-effect rounded-xl border border-outline-variant/10 text-left hover:border-primary/30 transition-colors cursor-default">
+<span class="material-symbols-outlined text-secondary mb-4 block" data-icon="terminal">terminal</span>
+<h4 class="text-on-surface font-semibold mb-2">Technical Core</h4>
+<p class="text-on-surface-variant text-sm">Every element optimized for technical precision and rapid data entry.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Nav for Mobile Only -->
+<nav class="md:hidden glass-effect flex justify-around items-center py-4 border-t border-outline-variant/20 relative z-30">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+<span class="text-[10px] font-bold">Projects</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="label">label</span>
+<span class="text-[10px]">Labels</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="priority_high">priority_high</span>
+<span class="text-[10px]">Priorities</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="text-[10px]">Profile</span>
+</a>
+</nav>
+</main>
+<!-- Decor Overlay -->
+<div class="fixed inset-0 pointer-events-none border-[24px] border-background mix-blend-overlay opacity-50"></div>
+</body></html>

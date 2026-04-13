@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>JKanban Projectspace - Task Editor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #060e1f;
+        }
+        .glass-panel {
+            background: rgba(15, 23, 41, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #060e1f; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1a253f; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #f97316; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "primary": "#f97316",
+                "primary-container": "#7c2d12",
+                "on-primary-fixed": "#ffffff",
+                "background": "#060e1f",
+                "surface": "#0f1729",
+                "surface-bright": "#1e293b",
+                "surface-container-low": "#0a1327",
+                "surface-container-high": "#1e293b",
+                "surface-container-highest": "#334155",
+                "on-surface": "#f1f5f9",
+                "on-surface-variant": "#94a3b8",
+                "outline-variant": "#334155",
+                "secondary": "#38bdf8",
+                "error": "#ef4444"
+              },
+              "borderRadius": {
+                "DEFAULT": "0.5rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+              },
+              "fontFamily": {
+                "headline": ["Inter"],
+                "body": ["Inter"],
+                "label": ["Inter"]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface overflow-hidden">
+<!-- Background Board Context -->
+<header class="bg-surface text-primary font-['Inter'] antialiased docked full-width top-0 z-50 flex justify-between items-center px-8 h-16 w-full fixed border-b border-outline-variant/10">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tight text-primary">JKanban</span>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-primary border-b-2 border-primary pb-1 font-medium transition-all duration-200" href="#">Dashboard</a>
+<a class="text-on-surface-variant hover:text-primary transition-all duration-200" href="#">Team</a>
+<a class="text-on-surface-variant hover:text-primary transition-all duration-200" href="#">Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-on-surface transition-all scale-95 active:scale-90" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-on-surface transition-all scale-95 active:scale-90" data-icon="settings">settings</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-primary/20">
+<img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtBhRj1iz9Ok06K2m4_X2eAevemAt8F1oBfTyNZ6A-wKj23d7I5Nz7QZrkcIzDQ8ubFRAVal7XgE3L9ZygyFfnjNJnDf-OCEeG-SOuj-MjVUXkh0VYuXmWzRa_IH_kqVdqU1LwcFfqvQjSe_eTpp6frKeeuAe8Q8_5_XiBywHPqboHW-tv5xMkiyS6_qOyhwzw_Pg617IVXVsKZKRdnV2eFE21-p0Y2451J9OOQV2cD4D0b3bWT-sZXQyoxnbLjjzIcTPv5QhlPQzN"/>
+</div>
+</div>
+</header>
+<aside class="bg-surface font-['Inter'] text-sm font-medium w-64 h-full flex flex-col py-6 px-4 fixed left-0 top-0 border-r border-outline-variant/10 pt-20 z-40">
+<div class="mb-8 px-2 flex items-center gap-3">
+<div class="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+</div>
+<div>
+<h2 class="text-lg font-black text-primary leading-none uppercase">Projectspace</h2>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">Active Board</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-primary font-semibold flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">grid_view</span> All Projects
+        </a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-primary/5 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="label">label</span> Labels
+        </a>
+<a class="text-on-surface-variant flex items-center gap-3 px-4 py-3 hover:bg-primary/5 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="priority_high">priority_high</span> Priorities
+        </a>
+</nav>
+<div class="mt-auto space-y-4 pt-4 border-t border-outline-variant/20">
+<button class="w-full flex items-center gap-3 px-4 py-3 text-error hover:bg-error/5 rounded-xl transition-colors font-semibold">
+<span class="material-symbols-outlined" data-icon="logout">logout</span> Logout
+        </button>
+<button class="w-full bg-primary text-on-primary font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-lg">add</span> New Task
+        </button>
+</div>
+</aside>
+<main class="ml-64 pt-16 h-screen overflow-hidden relative opacity-40 blur-sm pointer-events-none">
+<div class="p-8 grid grid-cols-4 gap-8 h-full overflow-y-auto custom-scrollbar">
+<div class="space-y-4">
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-on-surface-variant font-semibold uppercase text-xs tracking-widest">To Do</h3>
+<span class="bg-surface-container-high text-[10px] px-2 py-0.5 rounded-full text-on-surface-variant">3</span>
+</div>
+<div class="p-4 bg-surface-container rounded-2xl border border-outline-variant/10 shadow-sm space-y-3">
+<div class="flex justify-between items-start">
+<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-blue-500/10 text-blue-500 uppercase tracking-tighter">Feature</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">more_horiz</span>
+</div>
+<p class="text-sm font-medium text-on-surface leading-snug">User Authentication Flow Redesign</p>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-on-surface-variant font-semibold uppercase text-xs tracking-widest">In Progress</h3>
+<span class="bg-surface-container-high text-[10px] px-2 py-0.5 rounded-full text-on-surface-variant">2</span>
+</div>
+<div class="p-4 bg-surface-container rounded-2xl border border-primary/20 shadow-lg shadow-primary/5 space-y-3">
+<div class="flex justify-between items-start">
+<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-primary/10 text-primary uppercase tracking-tighter">Dev</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">more_horiz</span>
+</div>
+<p class="text-sm font-medium text-on-surface leading-snug">Real-time collaboration sync engine</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Task Editor Modal -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-6 overflow-y-auto custom-scrollbar">
+<div class="bg-surface w-full max-w-4xl rounded-[24px] overflow-hidden shadow-2xl border border-outline-variant/30 my-auto">
+<!-- Modal Header -->
+<div class="bg-surface px-6 sm:px-8 pt-8 pb-4 flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3 group flex-1">
+<h2 class="text-xl sm:text-2xl font-bold text-on-surface tracking-tight outline-none focus:text-primary transition-colors border-b-2 border-transparent focus:border-primary px-1" contenteditable="true">Draft initial wireframes</h2>
+<button class="material-symbols-outlined text-on-surface-variant text-lg opacity-40 group-hover:opacity-100 transition-opacity">edit</button>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-on-surface transition-colors">close</button>
+</div>
+<!-- Priority & Mark Completed (Moved here from main column) -->
+<div class="flex items-center gap-6 px-1">
+<div class="flex items-center gap-2 px-3 py-1.5 bg-error/10 border border-error/20 rounded-full">
+<span class="material-symbols-outlined text-error text-[16px]">priority_high</span>
+<span class="text-sm font-bold text-error uppercase tracking-wider">High Priority</span>
+</div>
+<button class="flex items-center gap-2 group">
+<div class="w-6 h-6 rounded-full border-2 border-primary/40 flex items-center justify-center group-hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[16px] text-primary opacity-0 group-hover:opacity-100 transition-opacity">check</span>
+</div>
+<span class="text-sm font-bold text-on-surface-variant uppercase tracking-wider group-hover:text-primary transition-colors">Mark Completed</span>
+</button>
+</div>
+</div>
+<!-- Modal Content -->
+<div class="px-6 sm:px-8 pb-8">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Core Details -->
+<div class="lg:col-span-7 space-y-6">
+<!-- Description -->
+<div class="space-y-3">
+<textarea class="w-full bg-surface-container-low/40 border border-outline-variant/20 rounded-xl text-sm text-on-surface p-6 focus:ring-1 focus:ring-primary/40 focus:border-primary/40 min-h-[180px] resize-none transition-all placeholder:text-on-surface-variant/40" placeholder="Add a more detailed description..."></textarea>
+</div>
+<!-- Metadata Rows -->
+<div class="space-y-2 pt-2">
+<!-- Technical Lead Row -->
+<div class="flex justify-between items-center bg-surface-container-low/40 p-5 rounded-xl border border-outline-variant/10">
+<span class="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.2em]">Technical Lead</span>
+<div class="flex items-center gap-3">
+<img alt="Assignee" class="w-8 h-8 rounded-full border border-primary/30" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBewls9ZqouGJM32suvkHu5VUkrTHKNnPZuPqTPVkFH-uCEt3E8YZEaf_j9LklgGO8kifp4kMxakEA0vedZcK_SSpAl1XoIl5uQHVf8yKKKBJerkNoOVqAmlOgmziQSrCW7J_LWPkyUF2N-OpfecMQfenDHMpMCxT4tEr7kjnRIKZSqMDy1UOt6x1Doxl06ZoNjiDP0otOFeReNvupfCbh6qhshs_EidRDo-0TZ1QJH9xbYSOjK7qqE_YccJX3ixhjERQDBztQimAnY"/>
+<span class="text-xl font-bold text-primary">Alex R.</span>
+</div>
+</div>
+<!-- Estimated Duration Row -->
+<div class="flex justify-between items-center bg-surface-container-low/40 p-5 rounded-xl border border-outline-variant/10">
+<span class="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.2em]">Estimated Duration</span>
+<span class="text-xl font-bold text-primary">4 Days</span>
+</div>
+<!-- Timeline Row -->
+<div class="flex justify-between items-center bg-surface-container-low/40 p-5 rounded-xl border border-outline-variant/10">
+<span class="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.2em]">Timeline</span>
+<span class="text-xl font-bold text-primary">Oct 20 — 24</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Subtasks -->
+<div class="lg:col-span-5 space-y-6">
+<div class="flex items-center justify-between mb-1">
+<label class="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.2em] flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">checklist</span> Subtasks (2/3)
+                        </label>
+<button class="text-[10px] font-extrabold text-primary uppercase tracking-widest hover:underline active:scale-95 transition-all">Add New</button>
+</div>
+<div class="space-y-2">
+<!-- Subtask 1 -->
+<div class="flex items-center gap-3 bg-surface-container-low/40 p-4 rounded-xl border border-outline-variant/10 group cursor-pointer">
+<div class="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-white font-bold">check</span>
+</div>
+<span class="text-sm text-on-surface-variant/50 line-through">Draft initial wireframes</span>
+</div>
+<!-- Subtask 2 -->
+<div class="flex items-center gap-3 bg-surface-container-low/40 p-4 rounded-xl border border-outline-variant/10 group cursor-pointer">
+<div class="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-white font-bold">check</span>
+</div>
+<span class="text-sm text-on-surface-variant/50 line-through">Setup design tokens</span>
+</div>
+<!-- Subtask 3 - Active -->
+<div class="flex items-center gap-3 bg-surface-container-low/40 p-4 rounded-xl border border-primary/30 group hover:border-primary/50 transition-all cursor-pointer">
+<div class="w-5 h-5 rounded-full border-2 border-primary/40 group-hover:border-primary"></div>
+<span class="text-sm text-on-surface font-medium">Implement kinetic hover states</span>
+</div>
+<!-- Subtask 4 -->
+<div class="flex items-center gap-3 bg-surface-container-low/40 p-4 rounded-xl border border-outline-variant/10 group cursor-pointer">
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant/40 group-hover:border-primary"></div>
+<span class="text-sm text-on-surface">Final review with stake holders</span>
+</div>
+<!-- Add New Input -->
+<div class="flex items-center justify-between gap-3 bg-surface-container-low/20 p-2 rounded-xl border border-dashed border-outline-variant/30 group hover:border-primary/40 transition-all mt-4">
+<input class="bg-transparent border-none focus:ring-0 text-sm text-on-surface placeholder:text-on-surface-variant/40 flex-1 py-1.5 px-3" placeholder="New subtask" type="text"/>
+<button class="material-symbols-outlined text-primary text-xl hover:scale-110 active:scale-90 transition-transform cursor-pointer mr-1">add_circle</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="bg-surface px-6 sm:px-8 py-5 flex flex-col sm:flex-row items-center justify-between border-t border-outline-variant/10 gap-4">
+<div class="flex items-center gap-6 order-2 sm:order-1">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors active:scale-90">attachment</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors active:scale-90">link</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors active:scale-90">history</button>
+</div>
+<div class="flex items-center gap-4 w-full sm:w-auto order-1 sm:order-2">
+<button class="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-sm font-semibold text-on-surface-variant hover:bg-surface-container-highest transition-colors">Cancel</button>
+<button class="flex-1 sm:flex-none px-10 py-2.5 rounded-xl text-sm font-extrabold bg-primary text-on-primary-fixed shadow-lg shadow-primary/30 active:scale-95 transition-transform hover:brightness-110">Save Changes</button>
+</div>
+</div>
+</div>
+</div>
+</body></html>

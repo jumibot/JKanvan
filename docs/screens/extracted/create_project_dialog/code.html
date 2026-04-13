@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>JKanban - Create New Project</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-error": "#450900",
+                        "primary-fixed-dim": "#f06c0b",
+                        "outline-variant": "#40485c",
+                        "on-primary-fixed-variant": "#4e1e00",
+                        "secondary-dim": "#40cedd",
+                        "on-tertiary-fixed-variant": "#614400",
+                        "on-secondary-fixed-variant": "#005969",
+                        "on-tertiary": "#614400",
+                        "primary": "#ff9153",
+                        "surface-dim": "#060e1f",
+                        "surface": "#060e1f",
+                        "on-primary-container": "#3f1700",
+                        "tertiary-dim": "#efad16",
+                        "primary-dim": "#fd761a",
+                        "on-primary": "#511f00",
+                        "outline": "#6d758b",
+                        "on-secondary-fixed": "#003a45",
+                        "on-tertiary-container": "#563b00",
+                        "on-tertiary-fixed": "#3c2900",
+                        "on-primary-fixed": "#000000",
+                        "secondary-container": "#00687a",
+                        "error-dim": "#d53d18",
+                        "surface-container-low": "#0a1327",
+                        "primary-fixed": "#ff7a23",
+                        "tertiary-fixed-dim": "#efad16",
+                        "surface-container-high": "#141f37",
+                        "on-secondary": "#004b58",
+                        "surface-bright": "#1f2c47",
+                        "on-secondary-container": "#ecfaff",
+                        "secondary-fixed-dim": "#48d4f3",
+                        "on-surface-variant": "#a3abc2",
+                        "primary-container": "#ff7a23",
+                        "on-error-container": "#ffd2c8",
+                        "inverse-on-surface": "#4d556a",
+                        "surface-container": "#0f192f",
+                        "tertiary": "#ffcd72",
+                        "inverse-surface": "#faf8ff",
+                        "secondary": "#53ddfc",
+                        "surface-container-lowest": "#000000",
+                        "inverse-primary": "#9e4400",
+                        "on-background": "#dde5fe",
+                        "error": "#ff7351",
+                        "surface-tint": "#ff9153",
+                        "tertiary-fixed": "#febb28",
+                        "tertiary-container": "#febb28",
+                        "on-surface": "#dde5fe",
+                        "background": "#060e1f",
+                        "surface-variant": "#1a253f",
+                        "error-container": "#b92902",
+                        "surface-container-highest": "#1a253f",
+                        "secondary-fixed": "#65e1ff"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(26, 37, 63, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #060e1f;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #40485c;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased selection:bg-primary/30 selection:text-primary min-h-screen flex overflow-hidden">
+<!-- Sidebar Navigation Shell -->
+<aside class="hidden md:flex flex-col h-screen w-64 bg-[#0c1425] border-r border-outline-variant/10 shadow-[4px_0px_24px_0px_rgba(6,14,31,0.5)] shrink-0 z-20">
+<div class="flex flex-col h-full p-4 space-y-2 font-['Inter'] text-sm font-medium tracking-wide">
+<div class="flex items-center gap-3 px-2 mb-8">
+<div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">developer_board</span>
+</div>
+<div>
+<h1 class="text-lg font-black text-[#ff9153]">JKanban</h1>
+<p class="text-[10px] opacity-40 uppercase tracking-[0.2em] font-bold">Technical Precision</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="space-y-1 flex-1">
+<a class="flex items-center gap-3 px-4 py-3 bg-[#ff9153]/10 text-[#ff9153] rounded-lg active:scale-[0.98] transition-all" href="#">
+<span class="material-symbols-outlined text-xl">grid_view</span>
+<span>All Projects</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#dde5fe] opacity-60 hover:bg-[#ff9153]/5 hover:opacity-100 active:scale-[0.98] transition-all" href="#">
+<span class="material-symbols-outlined text-xl">label</span>
+<span>Labels</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#dde5fe] opacity-60 hover:bg-[#ff9153]/5 hover:opacity-100 active:scale-[0.98] transition-all" href="#">
+<span class="material-symbols-outlined text-xl">priority_high</span>
+<span>Priorities</span>
+</a>
+<div class="pt-4 mt-4 border-t border-outline-variant/20">
+<a class="flex items-center gap-3 px-4 py-3 text-[#dde5fe] opacity-60 hover:bg-error/5 hover:text-error hover:opacity-100 active:scale-[0.98] transition-all" href="#">
+<span class="material-symbols-outlined text-xl">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</nav>
+<!-- Sidebar CTA Button -->
+<button class="mt-auto w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary-fixed font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+<span class="material-symbols-outlined">add</span>
+<span>Create New</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col relative min-w-0 bg-surface h-screen">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center w-full px-6 h-16 bg-[#060e1f] font-['Inter'] antialiased z-10">
+<div class="flex items-center gap-4">
+<div class="md:hidden">
+<span class="material-symbols-outlined text-on-surface">menu</span>
+</div>
+<div class="relative group hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+<input class="bg-surface-container-high border-none text-sm rounded-full pl-10 pr-4 py-2 w-64 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-outline/50" placeholder="Search precision data..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center text-on-background/70 hover:text-primary transition-colors cursor-pointer active:scale-95">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center text-on-background/70 hover:text-primary transition-colors cursor-pointer active:scale-95">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border-2 border-primary/20">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="Close up portrait of a professional man with short dark hair and a confident expression in a tech office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAu0pFU7JcYWkqXklBhrQrmUXOgmyK9IGcUVkI9BzURHuaMcA1enCn0KycGClRV9RVDtExLiC-wsk0zMOCVvUC2Bn7VcZoOYX5tgQciaxUgo8YkGTDoogMzGPAELGFzYejVM2UcwOHU4nOPP_1ZZBQFdzNRZjKET8eBlyDlEdMyl_D6i9KnSNfHvzwvXA40fPOjCiNQU24RbF0qyNgZpNp1kahhyjlcMROtufNYWr4yyImKPRC-h8DyluSlec6YfXMq3oJKUG-oEjR4"/>
+</div>
+</div>
+</header>
+<!-- Initial State Content (Background behind modal) -->
+<section class="flex-1 flex flex-col items-center justify-center p-8 opacity-20 pointer-events-none">
+<div class="relative w-72 h-72 mb-12">
+<div class="absolute inset-0 bg-primary/10 rounded-full blur-3xl"></div>
+<div class="relative flex items-center justify-center w-full h-full border-2 border-dashed border-outline-variant/30 rounded-full">
+<span class="material-symbols-outlined text-8xl text-outline-variant/50">layers</span>
+</div>
+</div>
+<h2 class="text-4xl font-bold text-center tracking-tight mb-4">No Active Projects</h2>
+<p class="text-on-surface-variant max-w-md text-center leading-relaxed">
+                Welcome to the observatory. Begin your journey by architecting your first project board. Precision starts here.
+            </p>
+</section>
+<!-- Contextual Modal Overlay -->
+<div class="absolute inset-0 z-50 flex items-center justify-center p-6 bg-surface-container-lowest/80 backdrop-blur-sm">
+<div class="glass-panel w-full max-w-2xl rounded-[2rem] border border-outline-variant/15 shadow-[0px_32px_64px_-16px_rgba(0,0,0,0.6)] overflow-hidden">
+<!-- Modal Header -->
+<div class="flex items-center justify-between px-8 py-6 border-b border-outline-variant/10">
+<div>
+<h3 class="text-2xl font-bold tracking-tight text-on-surface">Architect New Project</h3>
+<p class="text-sm text-on-surface-variant">Define the technical parameters for your next sprint</p>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Modal Body -->
+<form class="p-8 space-y-8 custom-scrollbar overflow-y-auto max-h-[716px]">
+<!-- Project Identity -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-4">
+<label class="block text-xs font-bold text-primary uppercase tracking-widest">Project Name</label>
+<input class="w-full bg-transparent border-b-2 border-outline-variant/30 focus:border-primary outline-none py-2 text-lg font-medium transition-all placeholder:text-outline-variant" placeholder="e.g., Quantum Redesign" type="text"/>
+</div>
+<div class="space-y-4">
+<label class="block text-xs font-bold text-primary uppercase tracking-widest">Team Leader</label>
+<div class="relative">
+<select class="w-full bg-transparent border-b-2 border-outline-variant/30 focus:border-primary outline-none py-2 text-lg font-medium transition-all appearance-none cursor-pointer">
+<option class="bg-surface-container-high">Select Leader</option>
+<option class="bg-surface-container-high">Alex Rivera</option>
+<option class="bg-surface-container-high">Jordan Vance</option>
+<option class="bg-surface-container-high">Morgan Chen</option>
+</select>
+<span class="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Icon Selector -->
+<div class="space-y-4">
+<label class="block text-xs font-bold text-primary uppercase tracking-widest">Project Icon Selector</label>
+<div class="flex flex-wrap gap-3">
+<button class="w-12 h-12 rounded-xl bg-primary/20 text-primary flex items-center justify-center border-2 border-primary ring-4 ring-primary/10" type="button">
+<span class="material-symbols-outlined">rocket_launch</span>
+</button>
+<button class="w-12 h-12 rounded-xl bg-surface-container-high text-on-surface-variant flex items-center justify-center border border-outline-variant/30 hover:border-outline transition-all" type="button">
+<span class="material-symbols-outlined">code</span>
+</button>
+<button class="w-12 h-12 rounded-xl bg-surface-container-high text-on-surface-variant flex items-center justify-center border border-outline-variant/30 hover:border-outline transition-all" type="button">
+<span class="material-symbols-outlined">analytics</span>
+</button>
+<button class="w-12 h-12 rounded-xl bg-surface-container-high text-on-surface-variant flex items-center justify-center border border-outline-variant/30 hover:border-outline transition-all" type="button">
+<span class="material-symbols-outlined">security</span>
+</button>
+<button class="w-12 h-12 rounded-xl bg-surface-container-high text-on-surface-variant flex items-center justify-center border border-outline-variant/30 hover:border-outline transition-all" type="button">
+<span class="material-symbols-outlined">cloud</span>
+</button>
+<button class="w-12 h-12 rounded-xl bg-surface-container-high text-on-surface-variant flex items-center justify-center border border-outline-variant/30 hover:border-outline transition-all" type="button">
+<span class="material-symbols-outlined">brush</span>
+</button>
+<button class="w-12 h-12 rounded-xl bg-surface-container-high text-on-surface-variant flex items-center justify-center border border-outline-variant/30 hover:border-outline transition-all" type="button">
+<span class="material-symbols-outlined">database</span>
+</button>
+</div>
+</div>
+<!-- Color & Priority Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-4">
+<label class="block text-xs font-bold text-primary uppercase tracking-widest">Accent Color Picker</label>
+<div class="flex gap-4">
+<button class="w-8 h-8 rounded-full bg-primary ring-offset-4 ring-offset-surface ring-2 ring-primary" type="button"></button>
+<button class="w-8 h-8 rounded-full bg-secondary hover:scale-110 transition-transform" type="button"></button>
+<button class="w-8 h-8 rounded-full bg-tertiary hover:scale-110 transition-transform" type="button"></button>
+<button class="w-8 h-8 rounded-full bg-error hover:scale-110 transition-transform" type="button"></button>
+<button class="w-8 h-8 rounded-full bg-emerald-500 hover:scale-110 transition-transform" type="button"></button>
+<button class="w-8 h-8 rounded-full bg-indigo-500 hover:scale-110 transition-transform" type="button"></button>
+</div>
+</div>
+<div class="space-y-4">
+<label class="block text-xs font-bold text-primary uppercase tracking-widest">Priority Level</label>
+<div class="flex p-1 bg-surface-container-high rounded-xl border border-outline-variant/20">
+<button class="flex-1 py-2 text-[10px] font-bold uppercase rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" type="button">Low</button>
+<button class="flex-1 py-2 text-[10px] font-bold uppercase rounded-lg bg-surface-variant text-on-surface shadow-sm ring-1 ring-white/5" type="button">Normal</button>
+<button class="flex-1 py-2 text-[10px] font-bold uppercase rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" type="button">High</button>
+<button class="flex-1 py-2 text-[10px] font-bold uppercase rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" type="button">Critical</button>
+</div>
+</div>
+</div>
+<!-- Description Area -->
+<div class="space-y-4">
+<label class="block text-xs font-bold text-primary uppercase tracking-widest">Project Description</label>
+<textarea class="w-full bg-surface-container-high/50 border border-outline-variant/30 rounded-2xl p-4 focus:ring-1 focus:ring-primary/50 outline-none transition-all resize-none placeholder:text-outline-variant/50" placeholder="Describe the mission scope, core deliverables, and technical requirements..." rows="3"></textarea>
+</div>
+<!-- Action Buttons -->
+<div class="flex gap-4 pt-4">
+<button class="flex-1 py-4 text-sm font-bold bg-white/5 hover:bg-white/10 rounded-2xl transition-all" type="button">Discard Draft</button>
+<button class="flex-1 py-4 text-sm font-bold bg-gradient-to-r from-primary to-primary-container text-on-primary-fixed rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all" type="submit">Initialize Project</button>
+</div>
+</form>
+</div>
+</div>
+</main>
+<!-- Bottom Nav for Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#060e1f] border-t border-outline-variant/10 flex items-center justify-around px-6 z-40">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined">grid_view</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface/50">
+<span class="material-symbols-outlined">label</span>
+</button>
+<div class="w-12 h-12 -mt-10 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-lg shadow-primary/30 border-4 border-[#060e1f]">
+<span class="material-symbols-outlined">add</span>
+</div>
+<button class="flex flex-col items-center gap-1 text-on-surface/50">
+<span class="material-symbols-outlined">priority_high</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface/50">
+<span class="material-symbols-outlined">logout</span>
+</button>
+</nav>
+</body></html>

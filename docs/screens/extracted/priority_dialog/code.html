@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html class="dark" data-lt-installed="true" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Manage Priorities - JKanban</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-surface": "#dde5fe",
+              "surface-variant": "#1a253f",
+              "error": "#ff7351",
+              "on-primary-container": "#3f1700",
+              "surface-container-low": "#0a1327",
+              "on-tertiary": "#614400",
+              "on-secondary": "#004b58",
+              "surface-container-lowest": "#000000",
+              "primary-dim": "#fd761a",
+              "secondary-fixed-dim": "#48d4f3",
+              "tertiary-fixed-dim": "#efad16",
+              "on-error-container": "#ffd2c8",
+              "tertiary-fixed": "#febb28",
+              "surface": "#060e1f",
+              "on-background": "#dde5fe",
+              "on-primary": "#511f00",
+              "outline-variant": "#40485c",
+              "primary": "#ff9153",
+              "error-container": "#b92902",
+              "on-secondary-fixed": "#003a45",
+              "on-surface-variant": "#a3abc2",
+              "surface-dim": "#060e1f",
+              "inverse-primary": "#9e4400",
+              "surface-container-highest": "#1a253f",
+              "surface-container-high": "#141f37",
+              "secondary": "#53ddfc",
+              "inverse-on-surface": "#4d556a",
+              "on-tertiary-fixed": "#3c2900",
+              "on-secondary-container": "#ecfaff",
+              "tertiary-container": "#febb28",
+              "on-primary-fixed": "#000000",
+              "secondary-dim": "#40ceed",
+              "surface-tint": "#ff9153",
+              "secondary-container": "#00687a",
+              "on-secondary-fixed-variant": "#005969",
+              "primary-fixed": "#ff7a23",
+              "primary-fixed-dim": "#f06c0b",
+              "on-tertiary-container": "#563b00",
+              "on-tertiary-fixed-variant": "#614400",
+              "surface-container": "#0f192f",
+              "error-dim": "#d53d18",
+              "on-error": "#450900",
+              "tertiary": "#ffcd72",
+              "background": "#060e1f",
+              "outline": "#6d758b",
+              "surface-bright": "#1f2c47",
+              "primary-container": "#ff7a23",
+              "secondary-fixed": "#65e1ff",
+              "tertiary-dim": "#efad16",
+              "on-primary-fixed-variant": "#4e1e00",
+              "inverse-surface": "#faf8ff"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(20, 31, 55, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body overflow-hidden">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-40 flex justify-between items-center px-10 h-20 bg-[#060e1f]/80 backdrop-blur-xl">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black text-[#ff9153]">JKanban</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-[#dde5fe]/70 hover:text-[#53ddfc] transition-all text-sm font-medium" href="#">Dashboard</a>
+<a class="text-[#dde5fe]/70 hover:text-[#53ddfc] transition-all text-sm font-medium" href="#">Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">settings</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User Profile" data-alt="close up professional headshot of a software architect with a clean tech aesthetic, soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAe6sxmut1ZzhfbBQFANnyCtWhffeBLZweoaWszOb-FmNc5w4af3H7YzKnige6kpKIDVw45JH-7NBI7WMCIeFyp7rCs6-LqDr88p4ORgpWTdQu8uD72St9luaUPdz8MjGZwbTUPY7z_ZP-pVxJuH_uHVXKm68caRg6Psrao3sY5MqEazV1b81ecWZykiMjMG3OEemGuuCUykM1Tt4U7NDwL7SZu5B9KCLnm9GdY3Zhv-rQEv_Mu4bHZtn6DCbf4pJZjYvgNeWrg04Qe"/>
+</div>
+</div>
+</header>
+<div class="flex h-screen pt-20">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 border-r-0 bg-[#060e1f] flex flex-col py-8 shrink-0">
+<div class="px-6 mb-8">
+<div class="text-xl font-bold tracking-tighter text-[#dde5fe]">Kinetic Precision</div>
+<div class="text-[10px] uppercase tracking-[0.2em] text-[#ff9153] font-bold">Command Center</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-6 py-3 text-[#dde5fe]/60 hover:text-[#dde5fe] hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined text-xl">grid_view</span>
+<span class="text-sm font-['Inter'] tracking-wide">All Projects</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-[#dde5fe]/60 hover:text-[#dde5fe] hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined text-xl">label</span>
+<span class="text-sm font-['Inter'] tracking-wide">Labels</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-[#ff9153] font-semibold bg-[#ff9153]/10 rounded-r-full group" href="#">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">priority_high</span>
+<span class="text-sm font-['Inter'] tracking-wide">Priorities</span>
+</a>
+</nav>
+<div class="mt-auto px-6 space-y-4">
+<button class="w-full bg-primary py-3 rounded-xl text-on-primary-fixed font-bold text-sm tracking-tight scale-95 active:scale-90 duration-150 transition-transform">
+                    New Project
+                </button>
+<a class="flex items-center gap-3 py-3 text-[#dde5fe]/60 hover:text-[#dde5fe] transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">logout</span>
+<span class="text-sm font-['Inter'] tracking-wide">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Dashboard (Blurred Background State) -->
+<main class="flex-1 p-10 overflow-hidden relative">
+<div class="grid grid-cols-3 gap-10 h-full opacity-40 blur-xl pointer-events-none">
+<!-- Kanban Column: To Do -->
+<div class="bg-surface-container-low rounded-xl p-6">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-on-surface font-semibold headline-sm">Backlog</h2>
+<span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded text-xs">4</span>
+</div>
+<div class="space-y-4">
+<div class="h-32 bg-surface-container-highest/80 rounded-xl"></div>
+<div class="h-40 bg-surface-container-highest/80 rounded-xl"></div>
+</div>
+</div>
+<!-- Kanban Column: In Progress -->
+<div class="bg-surface-container-low rounded-xl p-6">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-on-surface font-semibold headline-sm">Sprint</h2>
+<span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded text-xs">2</span>
+</div>
+<div class="space-y-4">
+<div class="h-36 bg-surface-container-highest/80 rounded-xl"></div>
+</div>
+</div>
+<!-- Kanban Column: Done -->
+<div class="bg-surface-container-low rounded-xl p-6">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-on-surface font-semibold headline-sm">Review</h2>
+<span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded text-xs">0</span>
+</div>
+</div>
+</div>
+<!-- Modal Overlay -->
+<div class="absolute inset-0 bg-surface/60 backdrop-blur-[24px] z-50 flex items-center justify-center p-6">
+<!-- Manage Priorities Dialog -->
+<div class="glass-panel w-full max-w-2xl rounded-[2rem] border border-primary/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden max-h-[921px]">
+<!-- Dialog Header -->
+<div class="p-8 pb-4">
+<h1 class="text-2xl font-bold tracking-tight text-on-surface">New Priority</h1>
+<p class="text-on-surface-variant text-sm mt-1">Organize your tasks with custom priority levels.</p>
+</div>
+<div class="flex-1 overflow-y-auto p-8 space-y-10">
+<!-- Create Section -->
+<section>
+<h3 class="label-sm text-primary uppercase mb-6 tracking-[0.1em]">Create New Priority</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-2">
+<label class="text-xs font-semibold text-on-surface-variant ml-1">Priority Name</label>
+<input class="w-full bg-surface-container-low border-b-2 border-outline-variant focus:border-primary focus:ring-0 text-on-surface px-0 py-3 transition-all placeholder:text-outline" placeholder="e.g. Urgent" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-semibold text-on-surface-variant ml-1">Priority Icon</label>
+<div class="grid grid-cols-5 gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary/20 text-primary border border-primary/40"><span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">bolt</span></button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-highest text-on-surface-variant hover:bg-surface-bright"><span class="material-symbols-outlined text-[20px]">priority_high</span></button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-highest text-on-surface-variant hover:bg-surface-bright"><span class="material-symbols-outlined text-[20px]">exclamation</span></button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-highest text-on-surface-variant hover:bg-surface-bright"><span class="material-symbols-outlined text-[20px]">flag</span></button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-highest text-on-surface-variant hover:bg-surface-bright"><span class="material-symbols-outlined text-[20px]">report</span></button>
+</div>
+</div>
+<div class="md:col-span-2 space-y-2">
+<label class="text-xs font-semibold text-on-surface-variant ml-1">Color Palette</label>
+<div class="flex gap-4">
+<button class="w-8 h-8 rounded-full bg-error ring-4 ring-error/20 ring-offset-2 ring-offset-surface-container-high"></button>
+<button class="w-8 h-8 rounded-full bg-primary"></button>
+<button class="w-8 h-8 rounded-full bg-tertiary"></button>
+<button class="w-8 h-8 rounded-full bg-secondary"></button>
+<button class="w-8 h-8 rounded-full bg-outline"></button>
+<button class="w-8 h-8 rounded-full bg-[#a855f7]"></button>
+<button class="w-8 h-8 rounded-full bg-[#10b981]"></button>
+</div>
+</div>
+</div>
+</section>
+<!-- Existing Priorities Section -->
+</div>
+<!-- Footer Actions -->
+<div class="p-8 pt-4 flex justify-end items-center gap-4">
+<button class="px-6 py-3 text-sm font-semibold text-secondary hover:bg-secondary/5 rounded-xl transition-colors">Close</button>
+<button class="px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-fixed font-bold rounded-xl shadow-[0_8px_20px_rgba(255,145,83,0.3)] hover:translate-y-[-2px] active:translate-y-0 transition-all">Create Priority</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
