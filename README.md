@@ -1,6 +1,10 @@
 # JKanban
 
-Aplicación de gestión de tareas estilo Kanban con soporte multiproyecto, equipos y prioridades personalizadas.
+JKanban es una aplicación web de gestión de tareas estilo Kanban diseñada para equipos que trabajan con múltiples proyectos en paralelo. Permite organizar el trabajo en tableros visuales con grupos de tareas personalizables, asignar responsables, establecer fechas y duraciones estimadas, y clasificar las tareas mediante etiquetas y prioridades propias de cada proyecto.
+
+La aplicación incluye gestión de equipos por proyecto —con roles de owner, líder y miembro—, subtareas con seguimiento de progreso, drag & drop para reordenar tareas y columnas, y un panel de administración de plataforma para gestionar usuarios y sus datos de forma centralizada.
+
+El backend expone una API REST construida con FastAPI y persiste los datos en SQLite. El frontend es una SPA en Vanilla JS servida directamente por el propio backend, sin dependencias de frameworks ni proceso de build.
 
 ## Funcionalidades
 
