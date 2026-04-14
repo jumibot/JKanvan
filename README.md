@@ -6,6 +6,12 @@ La aplicación incluye gestión de equipos por proyecto —con roles de owner, l
 
 El backend expone una API REST construida con FastAPI y persiste los datos en SQLite. El frontend es una SPA en Vanilla JS servida directamente por el propio backend, sin dependencias de frameworks ni proceso de build.
 
+## Documentación técnica
+
+La documentación técnica detallada del proyecto está en [`docs/`](docs/overview.md) — arquitectura, modelo de datos, API, permisos, frontend, reglas de negocio y tests.
+
+---
+
 ## Índice
 
 - [Funcionalidades](#funcionalidades)
