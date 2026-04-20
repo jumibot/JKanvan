@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from backend.domain.entities import Tag
 from backend.domain.exceptions import TagNameAlreadyExists
 from backend.domain.repositories import TagRepository
-from backend.infrastructure.database import get_connection
+from backend.infrastructure.persistence.factory import get_connection
 
 
 def _now() -> str:

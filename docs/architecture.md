@@ -99,9 +99,12 @@ class ProjectUseCases:
 
 | Archivo / carpeta | Responsabilidad |
 |-------------------|----------------|
-| `database.py` | Inicializa SQLite, crea las tablas con `CREATE TABLE IF NOT EXISTS`, ejecuta migraciones no destructivas en `_migrate()`, expone `get_connection()`. |
+| `database.py` | Alias público de dos líneas: re-exporta `get_connection` e `init_db` desde el factory. Los imports existentes no necesitan cambiar. |
+| `persistence/factory.py` | Despacha por engine (`DB_ENGINE`): instancia la conexión y orquesta schema + migraciones + seed del engine activo. Añadir un nuevo engine solo requiere extender este archivo. |
+| `persistence/sqlite/` | Implementación SQLite completa: `connection.py` (wrapper con traducción `%s`→`?`), `schema.py` (DDL), `migrations.py` (migraciones ad-hoc no destructivas), `seed.py` (datos demo), `adapter.py` (helpers `insert_returning_id`, etc.). |
+| `persistence/common/` | Utilidades agnósticas de engine: `utcnow()`, `ph(n)` para placeholders portables, helpers de datetime. |
 | `jwt_handler.py` | Codifica y decodifica tokens JWT HS256 con `PyJWT`. Expone `create_access_token(user_id)` y `decode_token(token) → user_id`. |
-| `repositories/` | Una clase por entidad (`SQLiteUserRepository`, `SQLiteProjectRepository`, etc.) que implementa el ABC correspondiente de `domain/repositories.py` usando `sqlite3`. |
+| `repositories/` | Una clase por entidad (`SQLiteUserRepository`, `SQLiteProjectRepository`, etc.) que implementa el ABC correspondiente de `domain/repositories.py`. Obtienen la conexión a través del factory, no directamente de sqlite3. |
 
 **Regla:** esta capa puede importar `domain/` y librerías externas (sqlite3, PyJWT). No importa `application/` ni `interfaces/`.
 
@@ -172,162 +175,141 @@ FastAPI `Depends()` actúa como el contenedor de DI. Cada router declara sus dep
 
 ---
 
-## Anexo: migrar de SQLite a PostgreSQL
+## Anexo: añadir un nuevo engine de base de datos
 
-La arquitectura limpia hace que este cambio esté **aislado en `infrastructure/`**. El dominio, los casos de uso y los routers no se tocan. Solo hay que intervenir en tres puntos.
+La arquitectura de persistencia está diseñada para que añadir un engine nuevo (p.ej. PostgreSQL) sea un cambio **aditivo y aislado en `infrastructure/persistence/`**. El dominio, los casos de uso, los routers y los repositorios existentes no se tocan.
 
-### 1. Dependencia
+### Cómo está estructurada la capa de persistencia
 
 ```
-# backend/requirements.txt — reemplazar (o añadir junto a sqlite3, que es stdlib):
-psycopg2-binary>=2.9      # driver síncrono
-# o para async:
-asyncpg>=0.29
+infrastructure/
+├── database.py                  ← alias público (2 líneas); no tocar
+├── persistence/
+│   ├── factory.py               ← dispatch por DB_ENGINE; aquí se añade el nuevo engine
+│   ├── common/
+│   │   └── utils.py             ← helpers agnósticos (utcnow, ph, etc.)
+│   ├── sqlite/                  ← implementación completa SQLite
+│   │   ├── connection.py        ← wrapper; traduce %s → ?
+│   │   ├── schema.py            ← DDL CREATE TABLE
+│   │   ├── migrations.py        ← migraciones ad-hoc
+│   │   ├── seed.py              ← datos demo
+│   │   └── adapter.py           ← helpers: insert_returning_id, idempotent_insert, …
+│   └── postgres/                ← (pendiente de implementar)
 ```
 
-### 2. `infrastructure/database.py`
+### Pasos para añadir PostgreSQL
 
-Este archivo es el único punto de configuración de la conexión.
+#### 1. Dependencia
 
-**SQLite actual:**
-```python
-import sqlite3
-from pathlib import Path
-
-DB_PATH = Path(__file__).parent.parent.parent / "tasks.db"
-
-def get_connection() -> sqlite3.Connection:
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
-    return conn
+```
+# backend/requirements.txt
+psycopg2-binary>=2.9
 ```
 
-**PostgreSQL nuevo:**
+#### 2. Crear `persistence/postgres/`
+
+Implementar los mismos módulos que tiene `sqlite/`, adaptando las especificidades de PostgreSQL:
+
+| Aspecto | SQLite (`sqlite/`) | PostgreSQL (`postgres/`) |
+|---------|-------------------|--------------------------|
+| Placeholders | `?` (o `%s` via wrapper) | `%s` nativo en psycopg2 |
+| ID insertado | `cursor.lastrowid` | `RETURNING id` |
+| Booleanos | `INTEGER` 0/1 | `BOOLEAN` nativo |
+| Timestamps | `TEXT` + `datetime('now')` | `TIMESTAMPTZ` + `NOW()` |
+| CHECK color | `SUBSTR(color,1,1)='#'` | `color ~ '^#[0-9A-Fa-f]{6}$'` |
+| AUTO ID | `INTEGER PRIMARY KEY AUTOINCREMENT` | `SERIAL PRIMARY KEY` |
+| FK enforcement | `PRAGMA foreign_keys = ON` | Activo por defecto |
+| Migraciones | Introspección + tabla-rebuild | Alembic o SQL versionado |
+
+Ejemplo `connection.py` para PostgreSQL — requiere un wrapper análogo a `SQLiteConnection`, porque psycopg2 no expone `.execute()` directamente en la conexión (solo en los cursors):
+
 ```python
 import os
 import psycopg2
-from psycopg2.extras import RealDictConnection   # equivalente a sqlite3.Row
+import psycopg2.extensions
+from psycopg2.extras import RealDictCursor
 
-DATABASE_URL = os.environ["DATABASE_URL"]
-# Ej: "postgresql://user:password@host:5432/jkanban"
+class PostgreSQLConnection:
+    def __init__(self, raw: psycopg2.extensions.connection) -> None:
+        self._conn = raw
+        self._cur = raw.cursor(cursor_factory=RealDictCursor)
 
-def get_connection() -> psycopg2.extensions.connection:
-    conn = psycopg2.connect(DATABASE_URL, connection_factory=RealDictConnection)
-    return conn
+    def execute(self, sql: str, params=()) -> psycopg2.extensions.cursor:
+        self._cur.execute(sql, params)
+        return self._cur
+
+    def executemany(self, sql: str, seq) -> psycopg2.extensions.cursor:
+        self._cur.executemany(sql, seq)
+        return self._cur
+
+    def commit(self) -> None:
+        self._conn.commit()
+
+    def __enter__(self) -> "PostgreSQLConnection":
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type:
+            self._conn.rollback()
+        else:
+            self._conn.commit()
+        self._cur.close()
+        self._conn.close()
+
+    def __getattr__(self, name: str):
+        return getattr(self._conn, name)
+
+def get_connection() -> PostgreSQLConnection:
+    return PostgreSQLConnection(psycopg2.connect(os.environ["DATABASE_URL"]))
 ```
 
-`RealDictConnection` hace que las filas sean accesibles por nombre (`row["id"]`), igual que `sqlite3.Row`, por lo que los `_to_entity()` de los repositorios no cambian.
+El wrapper expone la misma superficie `execute`/`executemany` que `SQLiteConnection` y devuelve filas accesibles por nombre (`row["id"]`) gracias a `RealDictCursor`.
 
-Para producción con alta concurrencia conviene usar un pool:
+#### 3. Extender `factory.py`
+
 ```python
-from psycopg2 import pool as pg_pool
-
-_pool = pg_pool.ThreadedConnectionPool(2, 10, DATABASE_URL)
-
 def get_connection():
-    conn = _pool.getconn()
-    conn.cursor_factory = psycopg2.extras.RealDictCursor
-    try:
-        yield conn
-    finally:
-        _pool.putconn(conn)
+    engine = db_settings.engine
+    if engine == "sqlite":
+        from backend.infrastructure.persistence.sqlite.connection import get_connection as _sqlite
+        return _sqlite()
+    if engine == "postgres":
+        from backend.infrastructure.persistence.postgres.connection import get_connection as _pg
+        return _pg()
+    raise ValueError(f"Unsupported DB engine: {engine!r}")
+
+def init_engine() -> None:
+    engine = db_settings.engine
+    if engine == "sqlite":
+        # … (ya implementado)
+    if engine == "postgres":
+        from backend.infrastructure.persistence.postgres.schema import create_schema
+        from backend.infrastructure.persistence.postgres.migrations import migrate
+        from backend.infrastructure.persistence.postgres.seed import seed_db
+        with get_connection() as conn:
+            create_schema(conn)
+            migrate(conn)
+            conn.commit()
+        seed_db()
+        return
+    raise ValueError(f"Unsupported DB engine: {engine!r}")
 ```
 
-### 3. `infrastructure/repositories/*.py` — diferencias SQL
+#### 4. Activar el engine
 
-Hay cuatro diferencias concretas entre SQLite y PostgreSQL que afectan a los repositorios:
-
-| Aspecto | SQLite | PostgreSQL |
-|---------|--------|-----------|
-| **Placeholder de parámetros** | `?` | `%s` |
-| **ID del registro insertado** | `cursor.lastrowid` | `RETURNING id` + `fetchone()[0]` |
-| **Booleanos** | `INTEGER` (0/1), `int(bool)` en escritura, `bool(row[col])` en lectura | `BOOLEAN` nativo, sin conversión |
-| **FK enforcement** | `PRAGMA foreign_keys = ON` (por conexión) | Activo por defecto; no necesita pragma |
-
-#### Ejemplo concreto: `user_repository.py`
-
-```python
-# ── SQLite ──────────────────────────────────────────────
-def create(self, user: User) -> User:
-    with get_connection() as conn:
-        cursor = conn.execute(
-            "INSERT INTO users (name, email, password_hash, avatar_url) VALUES (?,?,?,?)",
-            (user.name, user.email, user.password_hash, user.avatar_url),
-        )
-        conn.commit()
-        row = conn.execute("SELECT * FROM users WHERE id = ?",
-                           (cursor.lastrowid,)).fetchone()
-    return self._to_entity(row)
-
-# ── PostgreSQL ───────────────────────────────────────────
-def create(self, user: User) -> User:
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                """INSERT INTO users (name, email, password_hash, avatar_url)
-                   VALUES (%s, %s, %s, %s) RETURNING id""",
-                (user.name, user.email, user.password_hash, user.avatar_url),
-            )
-            new_id = cur.fetchone()["id"]
-            cur.execute("SELECT * FROM users WHERE id = %s", (new_id,))
-            row = cur.fetchone()
-        conn.commit()
-    return self._to_entity(row)
+```bash
+DB_ENGINE=postgres DATABASE_URL=postgresql://user:pass@host:5432/jkanban uvicorn backend.main:app
 ```
 
-El patrón es sistemático: `?` → `%s` en todas las queries, `cursor.lastrowid` → `RETURNING id`.
+### Resumen del alcance
 
-### 4. Schema DDL (`infrastructure/database.py` — `init_db`)
-
-Las definiciones de tabla necesitan ajustes menores:
-
-| SQLite | PostgreSQL |
-|--------|-----------|
-| `INTEGER PRIMARY KEY AUTOINCREMENT` | `SERIAL PRIMARY KEY` (o `BIGSERIAL`) |
-| `TEXT NOT NULL DEFAULT (datetime('now'))` | `TIMESTAMPTZ NOT NULL DEFAULT NOW()` |
-| `TEXT` para fechas | `TIMESTAMPTZ` |
-| `INTEGER NOT NULL DEFAULT 0 CHECK(is_admin IN (0,1))` | `BOOLEAN NOT NULL DEFAULT FALSE` |
-| `CHECK(LENGTH(color)=7 AND SUBSTR(color,1,1)='#')` | `CHECK(color ~ '^#[0-9A-Fa-f]{6}$')` |
-| `INSERT OR IGNORE INTO ...` | `INSERT INTO ... ON CONFLICT DO NOTHING` |
-
-Ejemplo de tabla `users` en PostgreSQL:
-```sql
-CREATE TABLE IF NOT EXISTS users (
-    id            SERIAL PRIMARY KEY,
-    name          TEXT         NOT NULL,
-    email         TEXT         NOT NULL UNIQUE,
-    password_hash TEXT         NOT NULL,
-    avatar_url    TEXT,
-    is_admin      BOOLEAN      NOT NULL DEFAULT FALSE,
-    created_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
-    modified_at   TIMESTAMPTZ,
-    created_by    INTEGER REFERENCES users(id) ON DELETE SET NULL,
-    modified_by   INTEGER REFERENCES users(id) ON DELETE SET NULL
-);
-```
-
-### 5. `_to_entity()` — ajuste de booleanos
-
-Con PostgreSQL y `RealDictCursor`, los booleanos ya llegan como `True`/`False` nativos. Hay que eliminar la conversión manual:
-
-```python
-# SQLite:
-is_admin=bool(row["is_admin"]) if "is_admin" in keys else False,
-
-# PostgreSQL (bool nativo, sin conversión):
-is_admin=row.get("is_admin", False),
-```
-
-### Resumen del alcance del cambio
-
-| Capa | Cambios |
-|------|---------|
+| Capa | Cambios para añadir PostgreSQL |
+|------|-------------------------------|
 | `domain/` | **Ninguno** |
 | `application/` | **Ninguno** |
 | `interfaces/` | **Ninguno** |
-| `infrastructure/database.py` | Driver, `get_connection()`, DDL de tablas |
-| `infrastructure/repositories/*.py` | `?` → `%s`, `lastrowid` → `RETURNING id`, conversiones de bool |
+| `infrastructure/repositories/` | **Ninguno** — ya usan el factory |
+| `infrastructure/database.py` | **Ninguno** — es un alias |
+| `infrastructure/persistence/factory.py` | Añadir rama `postgres` en `get_connection` e `init_engine` |
+| `infrastructure/persistence/postgres/` | Crear: `connection.py`, `schema.py`, `migrations.py`, `seed.py`, `adapter.py` |
 | `requirements.txt` | Añadir `psycopg2-binary` |
-
-El cambio es completamente mecánico y localizado. Si en algún momento se quisiera soportar ambas bases de datos simultáneamente (tests con SQLite, producción con PostgreSQL), bastaría con tener dos implementaciones de `get_connection()` seleccionadas por variable de entorno, sin tocar nada más.

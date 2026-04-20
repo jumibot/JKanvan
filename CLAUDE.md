@@ -62,12 +62,13 @@ SPA Vanilla JS sin bundler. Módulos cargados como `<script src>` en orden en `i
 
 ## Base de datos
 
-SQLite sin ORM. Queries SQL manuales en `infrastructure/repositories/`.
+Motor configurable via `DB_ENGINE` (default: `sqlite`). Sin ORM, queries SQL manuales en `infrastructure/repositories/`.
 
-- `?` como placeholder de parámetros
+- `?` como placeholder en repos actuales (SQLite); la capa de conexión también acepta `%s` portable
 - `cursor.lastrowid` para obtener el ID insertado
-- `PRAGMA foreign_keys = ON` activado por conexión
-- Migraciones no destructivas en `infrastructure/database.py` → `_migrate()`
+- `PRAGMA foreign_keys = ON` activado por conexión (en `persistence/sqlite/connection.py`)
+- Migraciones no destructivas en `infrastructure/persistence/sqlite/migrations.py`
+- Dispatch de engine en `infrastructure/persistence/factory.py` — añadir un engine nuevo solo requiere extender ese archivo
 
 ---
 

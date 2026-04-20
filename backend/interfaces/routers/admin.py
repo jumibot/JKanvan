@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 from backend.application.user_use_cases import verify_password
 from backend.domain.entities import User
-from backend.infrastructure.database import get_connection
+from backend.infrastructure.persistence.factory import get_connection
 from backend.infrastructure.repositories.user_repository import SQLiteUserRepository
 from backend.interfaces.dependencies import get_current_user, require_admin
 from backend.interfaces.schemas import UserResponse
