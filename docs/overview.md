@@ -24,7 +24,7 @@ JKanban es una aplicación web de gestión de tareas tipo Kanban multiusuario. O
 | Capa | Tecnología |
 |------|-----------|
 | Backend | Python 3 + FastAPI 0.115 |
-| Base de datos | SQLite (`tasks.db`) — sin ORM, queries SQL manuales |
+| Base de datos | SQLite por defecto (`tasks.db`) — configurable via `DB_ENGINE`; sin ORM, queries SQL manuales |
 | Autenticación | JWT HS256 · 7 días de expiración (PyJWT) |
 | Passwords | PBKDF2-SHA256 · 100 000 iteraciones |
 | Frontend | Vanilla JS + TailwindCSS · sin frameworks |
@@ -76,7 +76,8 @@ python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 | Variable | Default (dev) | Producción |
 |----------|--------------|------------|
 | `JWT_SECRET` | `dev-secret-key-change-in-production-32b` | Cadena aleatoria ≥32 chars |
-| `DB_PATH` | `tasks.db` | Ruta absoluta al archivo SQLite |
+| `DB_ENGINE` | `sqlite` | `sqlite` (PostgreSQL: pendiente de adapter) |
+| `SQLITE_PATH` | `<repo>/tasks.db` | Ruta absoluta al archivo SQLite |
 
 ---
 
