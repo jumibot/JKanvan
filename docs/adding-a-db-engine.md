@@ -69,11 +69,14 @@ backend/infrastructure/persistence/
 
 ## Paso 2 — `connection.py`
 
-Requisitos del objeto devuelto por `get_connection()`:
-- Soporta `with conn:` (context manager — commit en éxito, rollback en excepción)
-- `conn.execute(sql, params)` devuelve un cursor con `.lastrowid` o equivalente
+El objeto devuelto por `get_connection()` debe cumplir el mismo contrato que `SQLiteConnection`:
+
+- `conn.execute(sql, params)` → devuelve un cursor con `.fetchone()`, `.fetchall()`
 - `conn.executemany(sql, seq)`
+- `with conn:` → commit en éxito, rollback en excepción
 - Las filas son accesibles por nombre de columna: `row["id"]`
+
+**Problema con psycopg2:** las conexiones de psycopg2 no tienen `.execute()` — solo los cursors lo tienen. Devolver la conexión raw haría que `conn.execute(...)` fallara en runtime. La solución es un wrapper, igual que `SQLiteConnection`.
 
 ### Ejemplo PostgreSQL
 
@@ -81,43 +84,84 @@ Requisitos del objeto devuelto por `get_connection()`:
 """PostgreSQL connection adapter."""
 import os
 import psycopg2
+import psycopg2.extensions
 from psycopg2.extras import RealDictCursor
 
 
-def get_connection():
-    """Open and return a psycopg2 connection.
+class PostgreSQLConnection:
+    """Thin wrapper around psycopg2 connection.
 
-    RealDictCursor makes rows accessible by column name (row["id"]),
-    matching the sqlite3.Row interface used by all _to_entity() methods.
+    Exposes the same execute/executemany surface that SQLiteConnection
+    provides, so schema, migration and seed modules work identically
+    regardless of the underlying driver.
+
+    A single RealDictCursor is kept for the lifetime of the connection;
+    rows are accessible by column name (row["id"]).
     """
-    conn = psycopg2.connect(os.environ["DATABASE_URL"])
-    conn.cursor_factory = RealDictCursor
-    return conn
+
+    def __init__(self, raw: psycopg2.extensions.connection) -> None:
+        self._conn = raw
+        self._cur = raw.cursor(cursor_factory=RealDictCursor)
+
+    def execute(self, sql: str, params=()) -> psycopg2.extensions.cursor:
+        self._cur.execute(sql, params)
+        return self._cur
+
+    def executemany(self, sql: str, seq) -> psycopg2.extensions.cursor:
+        self._cur.executemany(sql, seq)
+        return self._cur
+
+    def commit(self) -> None:
+        self._conn.commit()
+
+    def __enter__(self) -> "PostgreSQLConnection":
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type:
+            self._conn.rollback()
+        else:
+            self._conn.commit()
+        self._cur.close()
+        self._conn.close()
+
+    def __getattr__(self, name: str):
+        return getattr(self._conn, name)
+
+
+def get_connection() -> PostgreSQLConnection:
+    """Open and return a wrapped PostgreSQL connection.
+
+    DATABASE_URL format: postgresql://user:password@host:5432/jkanban
+    """
+    raw = psycopg2.connect(os.environ["DATABASE_URL"])
+    return PostgreSQLConnection(raw)
 ```
 
 > `DATABASE_URL` sigue el formato estándar:  
 > `postgresql://user:password@host:5432/jkanban`
 
-**Consideración de producción:** para alta concurrencia usa un pool de conexiones:
+**Consideración de producción:** para alta concurrencia usa un pool. El wrapper sigue siendo el mismo; solo cambia cómo se obtiene la conexión raw:
 
 ```python
+from contextlib import contextmanager
 from psycopg2 import pool as pg_pool
 
 _pool: pg_pool.ThreadedConnectionPool | None = None
 
-def _get_pool():
+def _get_pool() -> pg_pool.ThreadedConnectionPool:
     global _pool
     if _pool is None:
         _pool = pg_pool.ThreadedConnectionPool(2, 10, os.environ["DATABASE_URL"])
     return _pool
 
-def get_connection():
-    conn = _get_pool().getconn()
-    conn.cursor_factory = RealDictCursor
+@contextmanager
+def get_connection() -> PostgreSQLConnection:
+    raw = _get_pool().getconn()
     try:
-        yield conn
+        yield PostgreSQLConnection(raw)
     finally:
-        _get_pool().putconn(conn)
+        _get_pool().putconn(raw)
 ```
 
 ---
