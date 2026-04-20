@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from backend.domain.entities import Priority, Tag, Task, User
 from backend.domain.repositories import TaskRepository
-from backend.infrastructure.database import get_connection
+from backend.infrastructure.persistence.factory import get_connection
 
 
 def _now() -> str:

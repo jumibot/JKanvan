@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from backend.domain.entities import Group, Tag
 from backend.domain.repositories import GroupRepository
-from backend.infrastructure.database import get_connection
+from backend.infrastructure.persistence.factory import get_connection
 
 
 def _now() -> str:

@@ -8,7 +8,7 @@ from backend.domain.exceptions import (
     MemberAlreadyInProject, MemberNotInProject,
     PriorityNotFound, ProjectHasGroups, ProjectLeaderRequired, ProjectNotFound, UserNotFound, UserNotInProject,
 )
-from backend.infrastructure.database import get_connection
+from backend.infrastructure.persistence.factory import get_connection
 from backend.infrastructure.repositories.group_repository import SQLiteGroupRepository
 from backend.infrastructure.repositories.priority_repository import SQLitePriorityRepository
 from backend.infrastructure.repositories.project_repository import SQLiteProjectRepository

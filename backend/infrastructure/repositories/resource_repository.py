@@ -1,7 +1,7 @@
 from datetime import datetime
 from backend.domain.entities import Resource
 from backend.domain.repositories import ResourceRepository
-from backend.infrastructure.database import get_connection
+from backend.infrastructure.persistence.factory import get_connection
 
 
 class SQLiteResourceRepository(ResourceRepository):
