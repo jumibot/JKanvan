@@ -1,16 +1,18 @@
+import os
 import tempfile
-from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
-# Patch DB_PATH BEFORE importing app.main (main.py llama init_db() al importar)
-import backend.infrastructure.database as db_module
-
+# Redirigir la BD a un fichero temporal ANTES de importar la app.
+# db_settings.sqlite_path lee os.environ["SQLITE_PATH"] en cada acceso (lazy),
+# por lo que fijar la variable aquí garantiza que init_db() y todos los
+# get_connection() posteriores abran el temp file, nunca tasks.db.
 _tmp_db = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
 _tmp_db.close()
-db_module.DB_PATH = Path(_tmp_db.name)
+os.environ["SQLITE_PATH"] = _tmp_db.name
 
+import backend.infrastructure.database as db_module  # noqa: E402
 from backend.main import app  # noqa: E402
 
 
