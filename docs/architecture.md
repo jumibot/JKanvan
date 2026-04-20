@@ -221,20 +221,49 @@ Implementar los mismos módulos que tiene `sqlite/`, adaptando las especificidad
 | FK enforcement | `PRAGMA foreign_keys = ON` | Activo por defecto |
 | Migraciones | Introspección + tabla-rebuild | Alembic o SQL versionado |
 
-Ejemplo `connection.py` para PostgreSQL:
+Ejemplo `connection.py` para PostgreSQL — requiere un wrapper análogo a `SQLiteConnection`, porque psycopg2 no expone `.execute()` directamente en la conexión (solo en los cursors):
 
 ```python
 import os
 import psycopg2
+import psycopg2.extensions
 from psycopg2.extras import RealDictCursor
 
-def get_connection():
-    conn = psycopg2.connect(os.environ["DATABASE_URL"])
-    conn.cursor_factory = RealDictCursor
-    return conn
+class PostgreSQLConnection:
+    def __init__(self, raw: psycopg2.extensions.connection) -> None:
+        self._conn = raw
+        self._cur = raw.cursor(cursor_factory=RealDictCursor)
+
+    def execute(self, sql: str, params=()) -> psycopg2.extensions.cursor:
+        self._cur.execute(sql, params)
+        return self._cur
+
+    def executemany(self, sql: str, seq) -> psycopg2.extensions.cursor:
+        self._cur.executemany(sql, seq)
+        return self._cur
+
+    def commit(self) -> None:
+        self._conn.commit()
+
+    def __enter__(self) -> "PostgreSQLConnection":
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type:
+            self._conn.rollback()
+        else:
+            self._conn.commit()
+        self._cur.close()
+        self._conn.close()
+
+    def __getattr__(self, name: str):
+        return getattr(self._conn, name)
+
+def get_connection() -> PostgreSQLConnection:
+    return PostgreSQLConnection(psycopg2.connect(os.environ["DATABASE_URL"]))
 ```
 
-`RealDictCursor` hace que las filas sean accesibles por nombre (`row["id"]`), igual que `sqlite3.Row`.
+El wrapper expone la misma superficie `execute`/`executemany` que `SQLiteConnection` y devuelve filas accesibles por nombre (`row["id"]`) gracias a `RealDictCursor`.
 
 #### 3. Extender `factory.py`
 
