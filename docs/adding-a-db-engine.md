@@ -1,0 +1,353 @@
+# Añadir un nuevo motor de base de datos
+
+Esta guía explica cómo conectar un engine de base de datos nuevo (p.ej. PostgreSQL, MySQL) a JKanban sin modificar el dominio, los casos de uso, los routers ni los repositorios existentes.
+
+## Índice
+
+- [Cómo funciona el sistema actual](#cómo-funciona-el-sistema-actual)
+- [Checklist de implementación](#checklist-de-implementación)
+- [Paso 1 — Crear la carpeta del adapter](#paso-1--crear-la-carpeta-del-adapter)
+- [Paso 2 — connection.py](#paso-2--connectionpy)
+- [Paso 3 — adapter.py](#paso-3--adapterpy)
+- [Paso 4 — schema.py](#paso-4--schemapy)
+- [Paso 5 — migrations.py](#paso-5--migrationspy)
+- [Paso 6 — seed.py](#paso-6--seedpy)
+- [Paso 7 — Registrar en factory.py](#paso-7--registrar-en-factorypy)
+- [Paso 8 — Activar y verificar](#paso-8--activar-y-verificar)
+- [Referencia: diferencias SQLite vs PostgreSQL](#referencia-diferencias-sqlite-vs-postgresql)
+
+---
+
+## Cómo funciona el sistema actual
+
+```
+database.py  (alias público, 2 líneas)
+    └── persistence/factory.py   ← punto de despacho por DB_ENGINE
+            ├── sqlite/
+            │     ├── connection.py   ← wrapper de sqlite3
+            │     ├── adapter.py      ← insert_returning_id, idempotent_insert, map_integrity_error
+            │     ├── schema.py       ← CREATE TABLE
+            │     ├── migrations.py   ← migraciones ad-hoc
+            │     └── seed.py         ← datos demo
+            └── <nuevo-engine>/       ← lo que hay que crear
+```
+
+Todos los repositorios obtienen su conexión a través de `factory.get_connection()`. El factory lee la variable de entorno `DB_ENGINE` y devuelve la conexión del adapter correspondiente. **Añadir un engine es completamente aditivo**: no se modifica ningún repositorio ni ninguna capa superior.
+
+---
+
+## Checklist de implementación
+
+```
+[ ] 1. Crear backend/infrastructure/persistence/<engine>/
+[ ] 2. connection.py  — clase wrapper + get_connection()
+[ ] 3. adapter.py     — insert_returning_id, idempotent_insert, map_integrity_error
+[ ] 4. schema.py      — create_schema(conn)
+[ ] 5. migrations.py  — migrate(conn)
+[ ] 6. seed.py        — seed_db()
+[ ] 7. factory.py     — añadir rama en get_connection() e init_engine()
+[ ] 8. Añadir driver a requirements.txt
+[ ] 9. pytest con DB_ENGINE=<engine> — 293 passed
+```
+
+---
+
+## Paso 1 — Crear la carpeta del adapter
+
+```
+backend/infrastructure/persistence/
+└── postgres/           ← nombre del engine (minúsculas, sin guiones)
+    ├── __init__.py
+    ├── connection.py
+    ├── adapter.py
+    ├── schema.py
+    ├── migrations.py
+    └── seed.py
+```
+
+---
+
+## Paso 2 — `connection.py`
+
+Requisitos del objeto devuelto por `get_connection()`:
+- Soporta `with conn:` (context manager — commit en éxito, rollback en excepción)
+- `conn.execute(sql, params)` devuelve un cursor con `.lastrowid` o equivalente
+- `conn.executemany(sql, seq)`
+- Las filas son accesibles por nombre de columna: `row["id"]`
+
+### Ejemplo PostgreSQL
+
+```python
+"""PostgreSQL connection adapter."""
+import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
+
+def get_connection():
+    """Open and return a psycopg2 connection.
+
+    RealDictCursor makes rows accessible by column name (row["id"]),
+    matching the sqlite3.Row interface used by all _to_entity() methods.
+    """
+    conn = psycopg2.connect(os.environ["DATABASE_URL"])
+    conn.cursor_factory = RealDictCursor
+    return conn
+```
+
+> `DATABASE_URL` sigue el formato estándar:  
+> `postgresql://user:password@host:5432/jkanban`
+
+**Consideración de producción:** para alta concurrencia usa un pool de conexiones:
+
+```python
+from psycopg2 import pool as pg_pool
+
+_pool: pg_pool.ThreadedConnectionPool | None = None
+
+def _get_pool():
+    global _pool
+    if _pool is None:
+        _pool = pg_pool.ThreadedConnectionPool(2, 10, os.environ["DATABASE_URL"])
+    return _pool
+
+def get_connection():
+    conn = _get_pool().getconn()
+    conn.cursor_factory = RealDictCursor
+    try:
+        yield conn
+    finally:
+        _get_pool().putconn(conn)
+```
+
+---
+
+## Paso 3 — `adapter.py`
+
+Este módulo aísla los tres puntos de especificidad del driver que de otro modo se filtrarían a los repositorios. Debe ofrecer exactamente las mismas tres funciones que `sqlite/adapter.py`:
+
+| Función | Qué hace | SQLite | PostgreSQL |
+|---------|---------|--------|-----------|
+| `insert_returning_id(conn, sql, params)` | INSERT y devuelve el ID generado | `cursor.lastrowid` | `RETURNING id` |
+| `idempotent_insert(conn, sql, params)` | INSERT que ignora duplicados | `INSERT OR IGNORE INTO` | `INSERT … ON CONFLICT DO NOTHING` |
+| `map_integrity_error(exc_factory)` | Context manager que traduce errores de integridad a excepciones de dominio | `sqlite3.IntegrityError` | `psycopg2.errors.UniqueViolation` |
+
+### Ejemplo PostgreSQL
+
+```python
+"""PostgreSQL-specific persistence helpers."""
+import psycopg2.errors
+from contextlib import contextmanager
+from typing import Callable
+
+
+def insert_returning_id(conn, sql: str, params) -> int:
+    sql_returning = sql.rstrip().rstrip(";") + " RETURNING id"
+    row = conn.execute(sql_returning, params).fetchone()
+    return row["id"]
+
+
+def idempotent_insert(conn, sql: str, params) -> None:
+    adapted = sql.rstrip().rstrip(";") + " ON CONFLICT DO NOTHING"
+    conn.execute(adapted, params)
+
+
+@contextmanager
+def map_integrity_error(exc_factory: Callable):
+    try:
+        yield
+    except psycopg2.errors.UniqueViolation as e:
+        raise exc_factory() from e
+```
+
+---
+
+## Paso 4 — `schema.py`
+
+Define `create_schema(conn)` con los `CREATE TABLE IF NOT EXISTS` adaptados al nuevo engine.
+
+### Diferencias clave respecto a SQLite
+
+| SQLite | PostgreSQL |
+|--------|-----------|
+| `INTEGER PRIMARY KEY AUTOINCREMENT` | `SERIAL PRIMARY KEY` |
+| `TEXT NOT NULL DEFAULT (datetime('now'))` | `TIMESTAMPTZ NOT NULL DEFAULT NOW()` |
+| `TEXT` para fechas | `TIMESTAMPTZ` |
+| `INTEGER NOT NULL DEFAULT 0 CHECK(is_admin IN (0,1))` | `BOOLEAN NOT NULL DEFAULT FALSE` |
+| `CHECK(LENGTH(color)=7 AND SUBSTR(color,1,1)='#')` | `CHECK(color ~ '^#[0-9A-Fa-f]{6}$')` |
+| `INSERT OR IGNORE INTO` | `INSERT INTO … ON CONFLICT DO NOTHING` |
+
+### FK circular entre `projects` y `priorities`
+
+SQLite acepta la FK circular sin validarla. PostgreSQL la rechaza en la creación. La solución es crear `projects` sin `priority_id`, luego añadirlo con `ALTER TABLE`:
+
+```python
+def create_schema(conn) -> None:
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS projects (
+            id          SERIAL PRIMARY KEY,
+            name        TEXT    NOT NULL,
+            ...
+            -- Sin priority_id aquí; se añade después de crear priorities
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS priorities (
+            id          SERIAL PRIMARY KEY,
+            project_id  INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+            ...
+        )
+    """)
+    # Añadir la FK circular ahora que priorities ya existe
+    conn.execute("""
+        ALTER TABLE projects
+        ADD COLUMN IF NOT EXISTS priority_id INTEGER REFERENCES priorities(id) ON DELETE SET NULL
+    """)
+    ...
+```
+
+---
+
+## Paso 5 — `migrations.py`
+
+Define `migrate(conn)`. Para engines distintos de SQLite se recomienda usar **migraciones versionadas** en lugar del patrón de introspección de SQLite (que depende de `sqlite_master` y `PRAGMA`, ambos SQLite-específicos).
+
+Opción recomendada: **Alembic** o archivos SQL numerados.
+
+```python
+"""PostgreSQL migrations — versioned approach."""
+
+
+def migrate(conn) -> None:
+    """Apply all pending migrations."""
+    _ensure_migrations_table(conn)
+    _run_pending(conn)
+
+
+def _ensure_migrations_table(conn) -> None:
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS _migrations (
+            id         SERIAL PRIMARY KEY,
+            name       TEXT NOT NULL UNIQUE,
+            applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+    """)
+
+
+def _run_pending(conn) -> None:
+    applied = {r["name"] for r in conn.execute("SELECT name FROM _migrations").fetchall()}
+    for name, sql in _MIGRATIONS:
+        if name not in applied:
+            conn.execute(sql)
+            conn.execute("INSERT INTO _migrations (name) VALUES (%s)", (name,))
+
+
+# Lista de migraciones en orden; añadir al final, nunca modificar las existentes
+_MIGRATIONS: list[tuple[str, str]] = [
+    # ("0001_ejemplo", "ALTER TABLE users ADD COLUMN IF NOT EXISTS nueva_col TEXT"),
+]
+```
+
+---
+
+## Paso 6 — `seed.py`
+
+Igual que `sqlite/seed.py` pero usando los helpers del nuevo adapter. Asegúrate de importar `get_connection` y `insert_returning_id` del módulo del propio engine:
+
+```python
+"""PostgreSQL seed data."""
+from backend.infrastructure.persistence.postgres.connection import get_connection
+from backend.infrastructure.persistence.postgres.adapter import insert_returning_id
+
+
+def seed_db() -> None:
+    with get_connection() as conn:
+        if conn.execute("SELECT COUNT(*) FROM users").fetchone()["count"] > 0:
+            return
+        u_alice = insert_returning_id(
+            conn,
+            "INSERT INTO users (name, email, password_hash, is_admin) VALUES (%s,%s,%s,%s)",
+            ("Alice Martín", "alice@example.com", "pbkdf2$seed$placeholder", True),
+        )
+        # … resto del seed igual que sqlite/seed.py
+        conn.commit()
+```
+
+---
+
+## Paso 7 — Registrar en `factory.py`
+
+Añadir una rama en las dos funciones del factory. **No modificar las ramas existentes**:
+
+```python
+from backend.config import db_settings
+
+
+def get_connection():
+    engine = db_settings.engine
+    if engine == "sqlite":
+        from backend.infrastructure.persistence.sqlite.connection import get_connection as _sqlite
+        return _sqlite()
+    if engine == "postgres":                                          # ← añadir
+        from backend.infrastructure.persistence.postgres.connection import get_connection as _pg
+        return _pg()
+    raise ValueError(f"Unsupported DB engine: {engine!r}")
+
+
+def init_engine() -> None:
+    engine = db_settings.engine
+    if engine == "sqlite":
+        # … (sin cambios)
+        return
+    if engine == "postgres":                                          # ← añadir
+        from backend.infrastructure.persistence.postgres.migrations import migrate
+        from backend.infrastructure.persistence.postgres.schema import create_schema
+        from backend.infrastructure.persistence.postgres.seed import seed_db
+        with get_connection() as conn:
+            create_schema(conn)
+            migrate(conn)
+            conn.commit()
+        seed_db()
+        return
+    raise ValueError(f"Unsupported DB engine: {engine!r}")
+```
+
+---
+
+## Paso 8 — Activar y verificar
+
+```bash
+# Añadir el driver
+echo "psycopg2-binary>=2.9" >> backend/requirements.txt
+pip install psycopg2-binary
+
+# Arrancar con el nuevo engine
+DB_ENGINE=postgres DATABASE_URL=postgresql://user:pass@localhost:5432/jkanban \
+    python -m uvicorn backend.main:app --reload
+
+# Pasar los tests contra el nuevo engine
+DB_ENGINE=postgres DATABASE_URL=postgresql://user:pass@localhost:5432/jkanban_test \
+    pytest -v
+```
+
+La suite de tests no debe requerir modificaciones: los fixtures crean la BD en memoria / schema temporal y la destruyen al terminar.
+
+---
+
+## Referencia: diferencias SQLite vs PostgreSQL
+
+| Aspecto | SQLite | PostgreSQL |
+|---------|--------|-----------|
+| Driver Python | `sqlite3` (stdlib) | `psycopg2-binary` |
+| Placeholder | `?` (o `%s` via wrapper) | `%s` |
+| ID insertado | `cursor.lastrowid` | `RETURNING id` |
+| Booleanos | `INTEGER` 0/1 | `BOOLEAN` nativo |
+| Timestamps | `TEXT` ISO-8601 | `TIMESTAMPTZ` |
+| Auto-ID | `INTEGER PRIMARY KEY AUTOINCREMENT` | `SERIAL PRIMARY KEY` |
+| DEFAULT fecha | `datetime('now')` | `NOW()` |
+| CHECK color | `SUBSTR(color,1,1)='#'` | `color ~ '^#[0-9A-Fa-f]{6}$'` |
+| Upsert silencioso | `INSERT OR IGNORE INTO` | `INSERT … ON CONFLICT DO NOTHING` |
+| FK enforcement | `PRAGMA foreign_keys = ON` por conexión | Activo por defecto |
+| Error duplicado | `sqlite3.IntegrityError` | `psycopg2.errors.UniqueViolation` |
+| Introspección schema | `sqlite_master`, `PRAGMA table_info` | `information_schema`, `pg_catalog` |
+| Migraciones | Introspección ad-hoc | Versionadas (Alembic recomendado) |

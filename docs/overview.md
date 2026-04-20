@@ -94,3 +94,4 @@ Este documento es el punto de entrada. Los documentos siguientes cubren cada ár
 | [Frontend](frontend.md) | Arquitectura SPA: estado global, router hash-based, pipeline de render, sistema de modales, módulos JS y seguridad. |
 | [Reglas de negocio](business-rules.md) | 21 excepciones de dominio con su código HTTP, restricciones por recurso y comportamiento SET NULL vs CASCADE. |
 | [Tests](testing.md) | Setup de fixtures, archivos de test, patrón de test típico y comandos de ejecución. |
+| [Añadir un motor de BD](adding-a-db-engine.md) | Guía paso a paso para conectar un engine nuevo (PostgreSQL, MySQL…): checklist, código de cada módulo del adapter y tabla de diferencias SQL. |
